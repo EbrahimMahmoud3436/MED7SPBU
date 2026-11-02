@@ -1,0 +1,2225 @@
+<!DOCTYPE html>
+<html lang="en" class="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Med7 SPBU — Workspace</title>
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Med7 SPBU" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="theme-color" content="#F3F5F0" id="meta-theme-color" />
+  <link id="dynamic-favicon" rel="icon" type="image/png" />
+  <link id="dynamic-apple-icon" rel="apple-touch-icon" />
+  <link id="dynamic-manifest" rel="manifest" />
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@500;600;700&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            display: ['Outfit', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body {
+      background-color: #F3F5F0;
+      color: #1A2421;
+      -webkit-tap-highlight-color: transparent;
+    }
+    html.dark body {
+      background-color: #0F1715;
+      color: #ECF2EE;
+    }
+    html.dark .bg-card {
+      background-color: #182320;
+      border-color: #263530;
+    }
+    .bg-card {
+      background-color: #FFFFFF;
+      border-color: #E4E9E3;
+    }
+    .adaptive-logo-img {
+      object-fit: contain;
+      filter: brightness(0.2) contrast(1.2);
+      transition: filter 0.2s ease;
+    }
+    html.dark .adaptive-logo-img {
+      filter: brightness(0) invert(0.92);
+    }
+    .custom-scroll::-webkit-scrollbar {
+      width: 5px;
+      height: 5px;
+    }
+    .custom-scroll::-webkit-scrollbar-thumb {
+      background: #CBD5CE;
+      border-radius: 10px;
+    }
+  </style>
+</head>
+<body class="min-h-screen pb-28 transition-colors duration-200 font-sans">
+
+  <!-- MAIN CONTAINER -->
+  <div id="app"></div>
+
+  <!-- MODAL CONTAINER -->
+  <div id="modal-root"></div>
+
+  <!-- IN-APP BANNER NOTIFICATION POPUP -->
+  <div id="toast" class="fixed top-4 right-4 left-4 sm:left-auto sm:w-96 z-50 hidden transform transition-all duration-300 bg-[#1A2421] text-white px-4 py-3.5 rounded-2xl shadow-2xl flex items-start gap-3 text-xs sm:text-sm font-medium border border-white/15">
+    <div class="w-8 h-8 rounded-xl bg-[#C5DF56] text-[#1A2421] flex items-center justify-center shrink-0 font-bold">🔔</div>
+    <div class="flex-1 min-w-0">
+      <div id="toast-title" class="font-bold text-white text-xs uppercase tracking-wider text-[#C5DF56]">Med7 SPBU Alert</div>
+      <div id="toast-msg" class="text-gray-200 text-xs mt-0.5 break-words">Saved!</div>
+    </div>
+  </div>
+
+  <script>
+    // ==========================================
+    // UPDATED OFFICIAL SPbU MOODLE LMS URL
+    // ==========================================
+    const SPBU_LMS_URL = "https://lms.spbu.ru/moodle/?redirect=0";
+
+    // ==========================================
+    // ADAPTIVE SPbU EMBLEM (LIGHT & DARK MODE READY)
+    // ==========================================
+    const SPBU_SVG_RAW = `<svg viewBox="0 0 200 220" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <g id="spbu-half">
+          <path d="M98 6 L100 6 L100 18 L95 18 Z" />
+          <path d="M100 16 C87 15, 80 23, 84 34 L100 34 Z" />
+          <rect x="83" y="35" width="17" height="4" rx="1" />
+          <path d="M88 37 C74 35, 72 51, 61 51 C50 51, 45 33, 35 37 C27 41, 33 61, 41 67 L47 62 C41 56, 38 45, 42 43 C46 41, 52 57, 62 57 C72 57, 77 43, 88 42 Z" />
+          <path d="M68 41 C59 39, 53 46, 56 54 L80 54 C83 46, 77 39, 68 41 Z" />
+          <path d="M78 56 L57 56 C47 57, 42 65, 47 72 L59 70 C54 67, 56 63, 62 63 L67 67 L51 75 C55 79, 63 78, 69 74 L75 92 L96 92 C92 78, 86 64, 78 56 Z" />
+          <path d="M45 77 L16 56 C13 60, 16 67, 24 73 L48 87 Z" />
+          <path d="M43 85 L8 72 C6 77, 10 83, 21 88 L46 95 Z" />
+          <path d="M41 93 L4 89 C4 95, 10 99, 23 102 L45 104 Z" />
+          <path d="M41 102 L6 105 C7 111, 14 114, 27 114 L45 112 Z" />
+          <path d="M42 111 L11 120 C13 125, 20 127, 33 125 L46 120 Z" />
+          <path d="M44 119 L18 134 C21 139, 28 139, 39 135 L48 128 Z" />
+          <path d="M46 127 L27 146 C31 150, 38 149, 46 142 L50 134 Z" />
+          <path d="M47 87 L72 91 L68 158 L48 152 Z" />
+          <path d="M48 152 C41 158, 43 168, 51 170 C49 164, 51 158, 55 156 C54 163, 57 170, 64 170 C62 163, 64 158, 69 156 L77 164 L84 158 L69 148 Z" />
+          <path d="M100 166 C85 166, 71 172, 64 180 C73 182, 83 179, 92 174 L100 174 Z" />
+          <path d="M100 176 C79 176, 63 185, 57 195 C69 196, 81 191, 91 184 L100 184 Z" />
+          <path d="M100 186 C85 188, 75 198, 73 208 C82 206, 90 200, 95 194 L100 215 Z" />
+        </g>
+      </defs>
+      <use href="#spbu-half" />
+      <use href="#spbu-half" transform="translate(200, 0) scale(-1, 1)" />
+      <ellipse cx="100" cy="126" rx="34" ry="44" />
+      <ellipse cx="100" cy="126" rx="27.5" ry="37.5" class="fill-white dark:fill-[#182320]" fill="#FFFFFF" />
+      <g>
+        <circle cx="99" cy="99" r="5.5" />
+        <path d="M94 93 C99 88, 105 90, 108 95 L98 96 Z" />
+        <line x1="108" y1="90" x2="77" y2="152" stroke="currentColor" stroke-width="2.8" />
+        <path d="M98 106 C91 108, 86 116, 84 126 L79 148 L108 156 L108 116 C105 109, 102 106, 98 106 Z" />
+        <ellipse cx="112" cy="134" rx="11" ry="17" class="fill-white dark:fill-[#182320]" fill="#FFFFFF" stroke="currentColor" stroke-width="3" />
+        <line x1="106" y1="124" x2="118" y2="144" stroke="currentColor" stroke-width="2" />
+        <line x1="118" y1="124" x2="106" y2="144" stroke="currentColor" stroke-width="2" />
+        <line x1="112" y1="120" x2="112" y2="148" stroke="currentColor" stroke-width="2" />
+      </g>
+    </svg>`;
+
+    function getSpbuLogoHtml(sizeClass = "w-9 h-9") {
+      if (window.state && window.state.globalLogoUrl) {
+        return `<img src="${window.state.globalLogoUrl}" alt="SPbU Emblem" class="${sizeClass} adaptive-logo-img select-none" />`;
+      }
+      return SPBU_SVG_RAW.replace('<svg ', `<svg class="${sizeClass} text-[#1F3A2E] dark:text-[#DCE7DF] fill-current select-none transition-colors duration-200" `);
+    }
+
+    let generatedAppIconUrl = '';
+    function initPwaAndServiceWorker() {
+      try {
+        const canvas = document.createElement('canvas');
+        canvas.width = 512;
+        canvas.height = 512;
+        const ctx = canvas.getContext('2d');
+        ctx.fillStyle = '#1A2421';
+        ctx.beginPath();
+        ctx.roundRect(0, 0, 512, 512, 110);
+        ctx.fill();
+
+        const svgString = SPBU_SVG_RAW
+          .replace('<svg ', '<svg width="380" height="410" fill="#DCE7DF" color="#DCE7DF" ')
+          .replace(/fill="#FFFFFF"/g, 'fill="#1A2421"');
+        const img = new Image();
+        const svgBlob = new Blob([svgString], { type: 'image/svg+xml;charset=utf-8' });
+        const url = URL.createObjectURL(svgBlob);
+
+        img.onload = function () {
+          ctx.drawImage(img, 66, 51, 380, 410);
+          URL.revokeObjectURL(url);
+          generatedAppIconUrl = canvas.toDataURL('image/png');
+
+          document.getElementById('dynamic-favicon').href = generatedAppIconUrl;
+          document.getElementById('dynamic-apple-icon').href = generatedAppIconUrl;
+
+          const manifestObj = {
+            name: "Med7 SPBU — General Medicine Workspace",
+            short_name: "Med7 SPBU",
+            description: "Study & Schedule Workspace for Med7 SPBU General Medicine",
+            start_url: window.location.href,
+            display: "standalone",
+            background_color: "#F3F5F0",
+            theme_color: "#245940",
+            icons: [
+              { src: generatedAppIconUrl, sizes: "512x512", type: "image/png", purpose: "any maskable" }
+            ]
+          };
+          const manifestBlob = new Blob([JSON.stringify(manifestObj)], { type: 'application/manifest+json' });
+          document.getElementById('dynamic-manifest').href = URL.createObjectURL(manifestBlob);
+        };
+        img.src = url;
+
+        if ('serviceWorker' in navigator && (window.location.protocol === 'https:' || window.location.hostname === 'localhost')) {
+          const swCode = `
+            self.addEventListener('install', e => self.skipWaiting());
+            self.addEventListener('activate', e => e.waitUntil(self.clients.claim()));
+            self.addEventListener('notificationclick', function(event) {
+              event.notification.close();
+              event.waitUntil(
+                clients.matchAll({ type: 'window', includeUncontrolled: true }).then(windowClients => {
+                  if (windowClients.length > 0) return windowClients[0].focus();
+                  return clients.openWindow('/');
+                })
+              );
+            });
+          `;
+          const swBlob = new Blob([swCode], { type: 'application/javascript' });
+          navigator.serviceWorker.register(URL.createObjectURL(swBlob)).catch(() => {});
+        }
+      } catch (e) {}
+    }
+
+    // ==========================================
+    // NATIVE OS & BROWSER NOTIFICATION ENGINE
+    // ==========================================
+    function getNotificationStatus() {
+      if (!('Notification' in window)) return 'unsupported';
+      return Notification.permission;
+    }
+
+    async function requestDeviceNotificationPermission() {
+      if (!('Notification' in window)) {
+        showToast('Use Chrome on Android/PC or Add to Home Screen on iPhone (iOS 16.4+) to enable system notifications.', 'System Info');
+        return;
+      }
+      try {
+        const perm = await Notification.requestPermission();
+        if (perm === 'granted') {
+          dispatchNativeNotification(
+            'Med7 SPBU Notifications Active ✅',
+            'You will now receive instant alerts for Pomodoro timers, new lectures, and university announcements!'
+          );
+        } else {
+          showToast('Notification permission was not granted. Please allow it in browser settings.', 'Permission Needed');
+        }
+        render();
+      } catch (e) {
+        showToast('Tap Lock icon in address bar → Permissions → Allow Notifications.', 'Enable Notifications');
+      }
+    }
+
+    function dispatchNativeNotification(title, body, targetGroup = 'All groups') {
+      if (
+        targetGroup !== 'All groups' &&
+        state &&
+        state.profile &&
+        targetGroup !== state.profile.subgroup
+      ) {
+        return;
+      }
+
+      playAlertChime();
+      if (navigator.vibrate) {
+        try { navigator.vibrate([200, 100, 200]); } catch (e) {}
+      }
+
+      showToast(body, title);
+
+      if ('Notification' in window && Notification.permission === 'granted') {
+        const options = {
+          body: body,
+          icon: generatedAppIconUrl || undefined,
+          badge: generatedAppIconUrl || undefined,
+          vibrate: [200, 100, 200],
+          tag: 'med7-' + Date.now()
+        };
+        if ('serviceWorker' in navigator) {
+          navigator.serviceWorker.getRegistration().then(reg => {
+            if (reg && reg.showNotification) {
+              reg.showNotification(title, options);
+            } else {
+              new Notification(title, options);
+            }
+          }).catch(() => {
+            try { new Notification(title, options); } catch (e) {}
+          });
+        } else {
+          try { new Notification(title, options); } catch (e) {}
+        }
+      }
+    }
+
+    // ==========================================
+    // 11 ACTUAL UNIVERSITY SUBJECTS
+    // ==========================================
+    const DEFAULT_SUBJECTS = [
+      { id: '01', code: '01', title: 'General Care of Surgical Patients', category: 'Surgery', resourcesCount: 12, topicKey: 'surgical' },
+      { id: '02', code: '02', title: 'Medical Informatics', category: 'Informatics', resourcesCount: 9, topicKey: 'informatics' },
+      { id: '03', code: '03', title: 'General Immunology', category: 'Immunology', resourcesCount: 16, topicKey: 'immune' },
+      { id: '04', code: '04', title: 'Biochemistry', category: 'Biochemistry', resourcesCount: 21, topicKey: 'biochemistry' },
+      { id: '05', code: '05', title: 'Clinical Anatomy', category: 'Anatomy', resourcesCount: 15, topicKey: 'clinical anatomy' },
+      { id: '06', code: '06', title: 'Introduction to Working with Scientific Literature', category: 'Research skills', resourcesCount: 8, topicKey: 'introduction to working' },
+      { id: '07', code: '07', title: 'Microscopic Anatomy, Embryology, Cytology - 2nd Semester', category: 'Histology & development', resourcesCount: 24, topicKey: 'microscopic' },
+      { id: '08', code: '08', title: 'Human Anatomy - 3rd Semester', category: 'Anatomy', resourcesCount: 24, topicKey: 'human anatomy' },
+      { id: '09', code: '09', title: 'Human Physiology', category: 'Physiology', resourcesCount: 18, topicKey: 'physiology' },
+      { id: '10', code: '10', title: 'Microbiology, Virology & Immunology', category: 'Infectious disease', resourcesCount: 20, topicKey: 'microbiology' },
+      { id: '11', code: '11', title: 'Medical Genetics', category: 'Genetics', resourcesCount: 9, topicKey: 'genetics' }
+    ];
+
+    const DEFAULT_EXAMS = [
+      { id: 'ex1', title: 'Human Anatomy — Myology & Thorax Colloquium', subject: 'Human Anatomy - 3rd Semester', date: '2026-11-12', type: 'Colloquium', room: 'Anatomy Lab 3rd Floor' },
+      { id: 'ex2', title: 'Human Physiology — Excitable Tissues Colloquium', subject: 'Human Physiology', date: '2026-11-18', type: 'Colloquium', room: 'Hall 3 (Dr. Oxana Ulitina)' },
+      { id: 'ex3', title: 'Microscopic Anatomy — Histology Slide Diagnosis', subject: 'Microscopic Anatomy, Embryology, Cytology - 2nd Semester', date: '2026-11-25', type: 'Zachet Prep', room: 'Microscopic Lab 3rd Floor' }
+    ];
+
+    const WEEK5_DAYS = [
+      { num: '31', name: 'SAT', fullDate: 'Saturday 31/10/2026' },
+      { num: '01', name: 'SUN', fullDate: 'Sunday 01/11/2026' },
+      { num: '02', name: 'MON', fullDate: 'Monday 02/11/2026' },
+      { num: '03', name: 'TUE', fullDate: 'Tuesday 03/11/2026' },
+      { num: '04', name: 'WED', fullDate: 'Wednesday 04/11/2026' },
+      { num: '05', name: 'THU', fullDate: 'Thursday 05/11/2026' },
+      { num: '06', name: 'FRI', fullDate: 'Friday 06/11/2026' }
+    ];
+
+    const DEFAULT_CALENDAR = [
+      // SATURDAY 31/10/2026 (ONLINE VIA https://lms.spbu.ru/moodle/?redirect=0)
+      { id: 'w5_1', day: '31', dayName: 'SAT', time: '09:00 - 10:30', title: 'Medical Genetics — Lecture 5', subtitle: 'Dr. Tatiana Lazareva • Online (lms.spbu.ru)', group: 'All groups', isOnline: true, onlineUrl: SPBU_LMS_URL, locationGuide: 'Online via SPbU Moodle LMS (https://lms.spbu.ru/moodle/?redirect=0)' },
+      { id: 'w5_2', day: '31', dayName: 'SAT', time: '10:40 - 12:10', title: 'MATS — Lecture', subtitle: 'Online Session • General Medicine (lms.spbu.ru)', group: 'All groups', isOnline: true, onlineUrl: SPBU_LMS_URL, locationGuide: 'Online via SPbU Moodle LMS (https://lms.spbu.ru/moodle/?redirect=0)' },
+      { id: 'w5_3', day: '31', dayName: 'SAT', time: '12:40 - 14:10', title: 'Microbiology, Virology, Immunology — Lecture 5', subtitle: 'Dr. Alla Sokurova • Online (lms.spbu.ru)', group: 'All groups', isOnline: true, onlineUrl: SPBU_LMS_URL, locationGuide: 'Online via SPbU Moodle LMS (https://lms.spbu.ru/moodle/?redirect=0)' },
+      // SUNDAY 01/11/2026
+      { id: 'w5_4', day: '01', dayName: 'SUN', time: '13:30 - 14:30', title: 'Microbiology, Virology, Immunology — Practical 3', subtitle: 'Microscopic lab 2nd floor (3,4-5,6-8,9)', group: 'Group A', isOnline: false, locationGuide: '2nd Floor • Microscopic Labs (3,4 - 5,6 - 8,9)' },
+      { id: 'w5_5', day: '01', dayName: 'SUN', time: '14:30 - 15:30', title: 'Microbiology, Virology, Immunology — Practical 4', subtitle: 'Microscopic lab 2nd floor (3,4-5,6-8,9)', group: 'Group A', isOnline: false, locationGuide: '2nd Floor • Microscopic Labs (3,4 - 5,6 - 8,9)' },
+      { id: 'w5_6', day: '01', dayName: 'SUN', time: '15:30 - 16:30', title: 'Human Physiology — Practical 7', subtitle: 'Hall 3 • Cairo-team (Dr. Oxana Ulitina)', group: 'Group A', isOnline: false, locationGuide: 'Hall 3 • Supervised by Dr. Oxana Ulitina' },
+      { id: 'w5_7', day: '01', dayName: 'SUN', time: '16:30 - 17:30', title: 'Human Physiology — Practical 8', subtitle: 'Hall 3 • Cairo-team (Dr. Oxana Ulitina)', group: 'Group A', isOnline: false, locationGuide: 'Hall 3 • Supervised by Dr. Oxana Ulitina' },
+      { id: 'w5_8', day: '01', dayName: 'SUN', time: '13:30 - 14:30', title: 'Human Physiology — Practical 7', subtitle: 'Hall 3 • Cairo-team (Dr. Oxana Ulitina)', group: 'Group B', isOnline: false, locationGuide: 'Hall 3 • Supervised by Dr. Oxana Ulitina' },
+      { id: 'w5_9', day: '01', dayName: 'SUN', time: '14:30 - 15:30', title: 'Human Physiology — Practical 8', subtitle: 'Hall 3 • Cairo-team (Dr. Oxana Ulitina)', group: 'Group B', isOnline: false, locationGuide: 'Hall 3 • Supervised by Dr. Oxana Ulitina' },
+      { id: 'w5_10', day: '01', dayName: 'SUN', time: '15:30 - 16:30', title: 'Microbiology, Virology, Immunology — Practical 3', subtitle: 'Microscopic lab 2nd floor (3,4-5,6-8,9)', group: 'Group B', isOnline: false, locationGuide: '2nd Floor • Microscopic Labs (3,4 - 5,6 - 8,9)' },
+      { id: 'w5_11', day: '01', dayName: 'SUN', time: '16:30 - 17:30', title: 'Microbiology, Virology, Immunology — Practical 4', subtitle: 'Microscopic lab 2nd floor (3,4-5,6-8,9)', group: 'Group B', isOnline: false, locationGuide: '2nd Floor • Microscopic Labs (3,4 - 5,6 - 8,9)' },
+      // MONDAY 02/11/2026
+      { id: 'w5_12', day: '02', dayName: 'MON', time: '13:30 - 14:30', title: 'Human Anatomy — Practical 11', subtitle: 'Microscopic lab (3,4-5,6-8,9 3rd floor)', group: 'Group A', isOnline: false, locationGuide: '3rd Floor • Microscopic Labs' },
+      { id: 'w5_13', day: '02', dayName: 'MON', time: '14:30 - 15:30', title: 'Human Anatomy — Practical 12', subtitle: 'Microscopic lab (3,4-5,6-8,9 3rd floor)', group: 'Group A', isOnline: false, locationGuide: '3rd Floor • Microscopic Labs' },
+      { id: 'w5_14', day: '02', dayName: 'MON', time: '15:30 - 16:30', title: 'Russian as a Foreign Language — Practical 11', subtitle: '3 Physics labs First Floor', group: 'Group A', isOnline: false, locationGuide: '1st Floor • 3 Physics Labs' },
+      { id: 'w5_15', day: '02', dayName: 'MON', time: '16:30 - 17:30', title: 'Russian as a Foreign Language — Practical 12', subtitle: '3 Physics labs First Floor', group: 'Group A', isOnline: false, locationGuide: '1st Floor • 3 Physics Labs' },
+      { id: 'w5_16', day: '02', dayName: 'MON', time: '13:30 - 14:30', title: 'Russian as a Foreign Language — Practical 11', subtitle: '3 Physics labs First Floor', group: 'Group B', isOnline: false, locationGuide: '1st Floor • 3 Physics Labs' },
+      { id: 'w5_17', day: '02', dayName: 'MON', time: '14:30 - 15:30', title: 'Russian as a Foreign Language — Practical 12', subtitle: '3 Physics labs First Floor', group: 'Group B', isOnline: false, locationGuide: '1st Floor • 3 Physics Labs' },
+      { id: 'w5_18', day: '02', dayName: 'MON', time: '15:30 - 16:30', title: 'Human Anatomy — Practical 11', subtitle: 'Microscopic lab (3,4-5,6-8,9 3rd floor)', group: 'Group B', isOnline: false, locationGuide: '3rd Floor • Microscopic Labs' },
+      { id: 'w5_19', day: '02', dayName: 'MON', time: '16:30 - 17:30', title: 'Human Anatomy — Practical 12', subtitle: 'Microscopic lab (3,4-5,6-8,9 3rd floor)', group: 'Group B', isOnline: false, locationGuide: '3rd Floor • Microscopic Labs' },
+      // TUESDAY 03/11/2026
+      { id: 'w5_20', day: '03', dayName: 'TUE', time: '13:30 - 14:30', title: 'Human Physiology — Practical 9', subtitle: 'Hall 3 • Cairo-team (Dr. Oxana Ulitina)', group: 'Group A', isOnline: false, locationGuide: 'Hall 3 • Dr. Oxana Ulitina' },
+      { id: 'w5_21', day: '03', dayName: 'TUE', time: '14:30 - 15:30', title: 'Human Physiology — Practical 10', subtitle: 'Hall 3 • Cairo-team (Dr. Oxana Ulitina)', group: 'Group A', isOnline: false, locationGuide: 'Hall 3 • Dr. Oxana Ulitina' },
+      { id: 'w5_22', day: '03', dayName: 'TUE', time: '15:30 - 16:30', title: 'Microscopic Anatomy, Embryology, Cytology — Practical 3', subtitle: 'Microscopic lab (3,4-5,6-8,9 3rd floor)', group: 'Group A', isOnline: false, locationGuide: '3rd Floor • Microscopic Labs' },
+      { id: 'w5_23', day: '03', dayName: 'TUE', time: '16:30 - 17:30', title: 'Microscopic Anatomy, Embryology, Cytology — Practical 4', subtitle: 'Microscopic lab (3,4-5,6-8,9 3rd floor)', group: 'Group A', isOnline: false, locationGuide: '3rd Floor • Microscopic Labs' },
+      { id: 'w5_24', day: '03', dayName: 'TUE', time: '13:30 - 14:30', title: 'Microscopic Anatomy, Embryology, Cytology — Practical 3', subtitle: 'Microscopic lab (3,4-5,6-8,9 3rd floor)', group: 'Group B', isOnline: false, locationGuide: '3rd Floor • Microscopic Labs' },
+      { id: 'w5_25', day: '03', dayName: 'TUE', time: '14:30 - 15:30', title: 'Microscopic Anatomy, Embryology, Cytology — Practical 4', subtitle: 'Microscopic lab (3,4-5,6-8,9 3rd floor)', group: 'Group B', isOnline: false, locationGuide: '3rd Floor • Microscopic Labs' },
+      { id: 'w5_26', day: '03', dayName: 'TUE', time: '15:30 - 16:30', title: 'Human Physiology — Practical 9', subtitle: 'Hall 3 • Cairo-team (Dr. Oxana Ulitina)', group: 'Group B', isOnline: false, locationGuide: 'Hall 3 • Dr. Oxana Ulitina' },
+      { id: 'w5_27', day: '03', dayName: 'TUE', time: '16:30 - 17:30', title: 'Human Physiology — Practical 10', subtitle: 'Hall 3 • Cairo-team (Dr. Oxana Ulitina)', group: 'Group B', isOnline: false, locationGuide: 'Hall 3 • Dr. Oxana Ulitina' },
+      // WEDNESDAY 04/11/2026
+      { id: 'w5_28', day: '04', dayName: 'WED', time: '13:30 - 14:30', title: 'Biochemistry — Lecture 5', subtitle: 'Hall 4 • Cairo team', group: 'Group A', isOnline: false, locationGuide: 'Lecture Hall 4' },
+      { id: 'w5_29', day: '04', dayName: 'WED', time: '14:30 - 15:30', title: 'Biochemistry — Lecture 6', subtitle: 'Hall 4 • Cairo team', group: 'Group A', isOnline: false, locationGuide: 'Lecture Hall 4' },
+      { id: 'w5_30', day: '04', dayName: 'WED', time: '15:30 - 16:30', title: 'Human Physiology — Practical 11', subtitle: 'Hall 3 • Cairo-team (Dr. Oxana Ulitina)', group: 'Group A', isOnline: false, locationGuide: 'Hall 3' },
+      { id: 'w5_31', day: '04', dayName: 'WED', time: '16:30 - 17:30', title: 'Human Physiology — Practical 12', subtitle: 'Hall 3 • Cairo-team (Dr. Oxana Ulitina)', group: 'Group A', isOnline: false, locationGuide: 'Hall 3' },
+      { id: 'w5_32', day: '04', dayName: 'WED', time: '13:30 - 14:30', title: 'Human Physiology — Practical 11', subtitle: 'Hall 3 • Cairo-team (Dr. Oxana Ulitina)', group: 'Group B', isOnline: false, locationGuide: 'Hall 3' },
+      { id: 'w5_33', day: '04', dayName: 'WED', time: '14:30 - 15:30', title: 'Human Physiology — Practical 12', subtitle: 'Hall 3 • Cairo-team (Dr. Oxana Ulitina)', group: 'Group B', isOnline: false, locationGuide: 'Hall 3' },
+      { id: 'w5_34', day: '04', dayName: 'WED', time: '15:30 - 16:30', title: 'Biochemistry — Lecture 5', subtitle: 'Hall 4 • Cairo team', group: 'Group B', isOnline: false, locationGuide: 'Lecture Hall 4' },
+      { id: 'w5_35', day: '04', dayName: 'WED', time: '16:30 - 17:30', title: 'Biochemistry — Lecture 6', subtitle: 'Hall 4 • Cairo team', group: 'Group B', isOnline: false, locationGuide: 'Lecture Hall 4' },
+      // THURSDAY 05/11/2026
+      { id: 'w5_36', day: '05', dayName: 'THU', time: '13:30 - 14:30', title: 'General Immunology — Lecture 9', subtitle: 'Hall 3', group: 'Group A', isOnline: false, locationGuide: 'Lecture Hall 3' },
+      { id: 'w5_37', day: '05', dayName: 'THU', time: '14:30 - 15:30', title: 'General Immunology — Lecture 10', subtitle: 'Hall 3', group: 'Group A', isOnline: false, locationGuide: 'Lecture Hall 3' },
+      { id: 'w5_38', day: '05', dayName: 'THU', time: '15:30 - 16:30', title: 'Human Anatomy — Practical 13', subtitle: 'Anatomy plastic lab (2nd-3rd-4th floor)', group: 'Group A', isOnline: false, locationGuide: 'Anatomy Plastic Labs (2nd-3rd-4th floor)' },
+      { id: 'w5_39', day: '05', dayName: 'THU', time: '16:30 - 17:30', title: 'Human Anatomy — Practical 14', subtitle: 'Anatomy plastic lab (2nd-3rd-4th floor)', group: 'Group A', isOnline: false, locationGuide: 'Anatomy Plastic Labs (2nd-3rd-4th floor)' },
+      { id: 'w5_40', day: '05', dayName: 'THU', time: '13:30 - 14:30', title: 'Human Anatomy — Practical 13', subtitle: 'Anatomy plastic lab (2nd-3rd-4th floor)', group: 'Group B', isOnline: false, locationGuide: 'Anatomy Plastic Labs (2nd-3rd-4th floor)' },
+      { id: 'w5_41', day: '05', dayName: 'THU', time: '14:30 - 15:30', title: 'Human Anatomy — Practical 14', subtitle: 'Anatomy plastic lab (2nd-3rd-4th floor)', group: 'Group B', isOnline: false, locationGuide: 'Anatomy Plastic Labs (2nd-3rd-4th floor)' },
+      { id: 'w5_42', day: '05', dayName: 'THU', time: '15:30 - 16:30', title: 'General Immunology — Lecture 9', subtitle: 'Hall 3', group: 'Group B', isOnline: false, locationGuide: 'Lecture Hall 3' },
+      { id: 'w5_43', day: '05', dayName: 'THU', time: '16:30 - 17:30', title: 'General Immunology — Lecture 10', subtitle: 'Hall 3', group: 'Group B', isOnline: false, locationGuide: 'Lecture Hall 3' }
+    ];
+
+    const DEFAULT_TASKS = [
+      { id: 't1', title: 'Review the brachial plexus diagrams', subject: 'Clinical Anatomy', dueGroup: 'TODAY', dueLabel: 'Today', completed: false },
+      { id: 't2', title: 'Complete practice set 04', subject: 'Biochemistry', dueGroup: 'TODAY', dueLabel: 'Today', completed: false },
+      { id: 't3', title: 'Read the histology slide guide', subject: 'Microscopic Anatomy, Embryology, Cytology - 2nd Semester', dueGroup: 'TOMORROW', dueLabel: 'Tomorrow', completed: false },
+      { id: 't4', title: 'Outline the literature review', subject: 'Introduction to Working with Scientific Literature', dueGroup: 'SAT, NOV 07', dueLabel: 'Sat, Nov 07', completed: false },
+      { id: 't5', title: 'Label the thorax practical sheet', subject: 'Human Anatomy - 3rd Semester', dueGroup: 'MON, NOV 02', dueLabel: 'Done', completed: true },
+      { id: 't6', title: 'Revise complement pathways', subject: 'General Immunology', dueGroup: 'THU, NOV 05', dueLabel: 'Thu, Nov 05', completed: false }
+    ];
+
+    const DEFAULT_LIBRARY = [
+      { id: 'f1', subject: 'Medical Genetics', title: 'Lecture 2.pdf', type: 'PDF', size: '2.8 MB', badge: 'M', starred: true, summary: 'Chromosomal abnormalities, Mendelian inheritance patterns, and clinical pedigree analysis for Lecture 5 prep.', url: '#' },
+      { id: 'f2', subject: 'Human Anatomy - 3rd Semester', title: 'Part_3_Anatomy_3rd_Semester.pdf', type: 'PDF', size: '4.5 MB', badge: 'H', starred: true, summary: 'Complete osteology, arthrology, and thorax topography guide for Practical sessions 11–14.', url: '#' },
+      { id: 'f3', subject: 'General Care of Surgical Patients', title: 'Checklists_12_Surgical_Care.pdf', type: 'PDF', size: '1.9 MB', badge: 'G', starred: false, summary: 'Asepsis, antisepsis, and surgical patient preparation checklists.', url: '#' },
+      { id: 'f4', subject: 'Microscopic Anatomy, Embryology, Cytology - 2nd Semester', title: 'SPBU_GM_Histology_Lectures.pdf', type: 'PDF', size: '5.2 MB', badge: 'M', starred: true, summary: 'Epithelial, connective, and muscular tissue histological slide identification guide.', url: '#' },
+      { id: 'f5', subject: 'Microbiology, Virology & Immunology', title: 'San_Micro_Wrap_Up.pdf', type: 'PDF', size: '3.4 MB', badge: 'M', starred: false, summary: 'Bacterial morphology, staining techniques, and Practical 3 & 4 lab protocol.', url: '#' },
+      { id: 'f6', subject: 'Medical Informatics', title: 'Medical_Informatics_Module.pdf', type: 'PDF', size: '2.1 MB', badge: 'M', starred: false, summary: 'Healthcare information systems, medical databases, and statistical data processing.', url: '#' },
+      { id: 'f7', subject: 'Human Physiology', title: 'Physiology_Practicals_Guide.pdf', type: 'PDF', size: '3.7 MB', badge: 'H', starred: true, summary: 'Action potential, neuromuscular junction, and Dr. Oxana Ulitina Hall 3 practical workbook.', url: '#' }
+    ];
+
+    const DEFAULT_UNI_CONTENT = {
+      Schedules: [
+        { id: 'u1', title: 'SPBU-GM 2nd Year — Week 5 Official Schedule (31/10 - 05/11/2026)', desc: 'Synced from #Schedules: Saturday online lectures via lms.spbu.ru/moodle + Sun–Thu practicals & lectures.' }
+      ],
+      Assignments: [
+        { id: 'u2', title: 'Biochemistry Practice Set 04', desc: 'Complete metabolic pathway exercises before Wednesday Lecture 5 & 6 in Hall 4.' }
+      ],
+      Announcements: [
+        { id: 'u4', title: 'Auto-Bridge Active: Official Group → General Med', desc: 'All official batch announcements, PDF schedules, and room changes now sync automatically 24/7.' }
+      ]
+    };
+
+    const DEFAULT_NOTIFICATIONS = [
+      { id: 'n1', title: 'SPbU Moodle LMS Connected', body: 'Online lectures now open https://lms.spbu.ru/moodle/?redirect=0 directly.', time: 'Just now', unread: true },
+      { id: 'n2', title: 'Cross-Platform Push Notifications Ready', body: 'Enable device alerts to receive Pomodoro, Schedule & Library updates on Android, iOS, Windows & Mac.', time: '10m ago', unread: true }
+    ];
+
+    // ==========================================
+    // STATE MANAGEMENT
+    // ==========================================
+    const STORAGE_KEY = 'med7_spbu_state_v7';
+
+    function loadState() {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if (saved) {
+        try { return JSON.parse(saved); } catch (e) {}
+      }
+      return {
+        onboardingStep: 'setup1',
+        activeTab: 'home',
+        globalLogoUrl: '',
+        profile: {
+          name: 'abdo',
+          demoId: 'st123456',
+          subgroup: 'Group B',
+          institutionLabel: 'Med7 SPBU',
+          groupLabel: 'General Medicine Group - Batch 2026'
+        },
+        theme: 'light',
+        ownerMode: false,
+        ownerCredentials: {
+          id: 'AE7',
+          pass: 'spbu2026'
+        },
+        telegramConnected: true,
+        telegramBotToken: '',
+        lastUpdateId: 0,
+        studyBlocksCompleted: 9,
+        studyBlocksTarget: 18,
+        timerConfig: {
+          mode: 'Countdown',
+          countdownMin: 45,
+          focusMin: 10,
+          shortBreakMin: 3,
+          longBreakMin: 15,
+          rounds: 5,
+          alertSound: true
+        },
+        taskFilter: 'All tasks',
+        calendarFilter: 'My group',
+        selectedDay: '31',
+        calendarView: 'list',
+        uniSubTab: 'Schedules',
+        librarySearch: '',
+        libraryFilter: 'All',
+        subjects: DEFAULT_SUBJECTS,
+        exams: DEFAULT_EXAMS,
+        tasks: DEFAULT_TASKS,
+        calendar: DEFAULT_CALENDAR,
+        library: DEFAULT_LIBRARY,
+        uniContent: DEFAULT_UNI_CONTENT,
+        notifications: DEFAULT_NOTIFICATIONS
+      };
+    }
+
+    window.state = loadState();
+    let state = window.state;
+    if (!state.ownerCredentials) {
+      state.ownerCredentials = { id: 'AE7', pass: 'spbu2026' };
+    }
+    if (state.timerConfig && state.timerConfig.mode === 'Stopwatch') {
+      state.timerConfig.mode = 'Countdown';
+    }
+
+    function saveState() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+      applyTheme();
+    }
+
+    function applyTheme() {
+      const metaTheme = document.getElementById('meta-theme-color');
+      if (state.theme === 'dark') {
+        document.documentElement.classList.add('dark');
+        if (metaTheme) metaTheme.setAttribute('content', '#0F1715');
+      } else {
+        document.documentElement.classList.remove('dark');
+        if (metaTheme) metaTheme.setAttribute('content', '#F3F5F0');
+      }
+    }
+
+    let toastTimeout = null;
+    function showToast(msg, title = 'Med7 SPBU Alert') {
+      const t = document.getElementById('toast');
+      document.getElementById('toast-title').textContent = title;
+      document.getElementById('toast-msg').textContent = msg;
+      t.classList.remove('hidden');
+      clearTimeout(toastTimeout);
+      toastTimeout = setTimeout(() => t.classList.add('hidden'), 3500);
+    }
+
+    // ==========================================
+    // TELEGRAM LIVE AUTO-SYNC + OS PUSH NOTIFICATIONS
+    // ==========================================
+    async function syncFromTelegramBot(silent = false) {
+      if (!state.telegramBotToken) {
+        if (!silent) showToast('Add your Bot Token in Owner Mode first', 'Telegram Sync');
+        return;
+      }
+      try {
+        const url = `https://api.telegram.org/bot${state.telegramBotToken.trim()}/getUpdates?offset=${state.lastUpdateId + 1}`;
+        const res = await fetch(url);
+        const data = await res.json();
+        if (!data.ok) return;
+
+        let newItemsCount = 0;
+        for (const upd of data.result) {
+          state.lastUpdateId = Math.max(state.lastUpdateId, upd.update_id);
+          const msg = upd.message || upd.channel_post;
+          if (!msg) continue;
+
+          let topicName = '';
+          if (msg.reply_to_message && msg.reply_to_message.forum_topic_created) {
+            topicName = msg.reply_to_message.forum_topic_created.name.toLowerCase();
+          }
+          const text = (msg.text || msg.caption || '').trim();
+
+          if (msg.document) {
+            const fileName = msg.document.file_name || 'Lecture_File.pdf';
+            const ext = fileName.split('.').pop().toUpperCase();
+            const sizeMb = msg.document.file_size ? (msg.document.file_size / (1024 * 1024)).toFixed(1) + ' MB' : '2.0 MB';
+
+            if (topicName.includes('schedule') || fileName.toLowerCase().includes('week') || fileName.toLowerCase().includes('schedule')) {
+              state.uniContent.Schedules.unshift({
+                id: 'u_' + Date.now() + Math.random(),
+                title: `New Schedule PDF: ${fileName}`,
+                desc: text || 'Synced automatically from #Schedules.'
+              });
+              state.notifications.unshift({
+                id: 'n_' + Date.now() + Math.random(),
+                title: '📅 New Schedule PDF Uploaded',
+                body: `${fileName} is now live in University Schedules.`,
+                time: 'Just now',
+                unread: true
+              });
+              dispatchNativeNotification('📅 New Schedule PDF Uploaded', `${fileName} is now available in your Med7 SPBU workspace.`);
+              newItemsCount++;
+            } else {
+              let matchedSubject = 'Clinical Anatomy';
+              for (const s of state.subjects) {
+                if (topicName.includes(s.topicKey) || text.toLowerCase().includes(s.topicKey) || fileName.toLowerCase().includes(s.topicKey)) {
+                  matchedSubject = s.title;
+                  s.resourcesCount += 1;
+                  break;
+                }
+              }
+              state.library.unshift({
+                id: 'f_' + Date.now() + Math.random(),
+                subject: matchedSubject,
+                title: fileName,
+                type: ext,
+                size: sizeMb,
+                badge: matchedSubject.charAt(0).toUpperCase(),
+                starred: false,
+                summary: text || `Auto-synced from ${matchedSubject} topic in General Med.`,
+                url: '#'
+              });
+              state.notifications.unshift({
+                id: 'n_' + Date.now() + Math.random(),
+                title: `📚 New File: ${matchedSubject}`,
+                body: `${fileName} (${sizeMb}) was added to your Library.`,
+                time: 'Just now',
+                unread: true
+              });
+              dispatchNativeNotification(`📚 New Lecture File in ${matchedSubject}`, `${fileName} was just uploaded to your Library.`);
+              newItemsCount++;
+            }
+          }
+
+          if (text && !msg.document) {
+            let targetGroup = 'All groups';
+            if (text.toLowerCase().includes('group a')) targetGroup = 'Group A';
+            else if (text.toLowerCase().includes('group b')) targetGroup = 'Group B';
+
+            state.uniContent.Announcements.unshift({
+              id: 'u_' + Date.now() + Math.random(),
+              title: 'University Announcement',
+              desc: text
+            });
+            state.notifications.unshift({
+              id: 'n_' + Date.now() + Math.random(),
+              title: '📢 New University Announcement',
+              body: text,
+              time: 'Just now',
+              unread: true
+            });
+            dispatchNativeNotification('📢 Med7 SPBU Announcement', text, targetGroup);
+            newItemsCount++;
+          }
+        }
+
+        saveState();
+        if (newItemsCount > 0) render();
+      } catch (e) {}
+    }
+
+    setInterval(() => {
+      if (state.telegramBotToken) syncFromTelegramBot(true);
+    }, 20000);
+
+    // ==========================================
+    // THEMED COUNTDOWN & POMODORO ENGINE
+    // ==========================================
+    let timerRunning = false;
+    let timerActiveView = false;
+    let timerSeconds = (state.timerConfig?.countdownMin || 45) * 60;
+    let timerInterval = null;
+    let pomoCurrentRound = 1;
+    let pomoPhase = 'Focus';
+
+    function playAlertChime() {
+      if (!state.timerConfig.alertSound) return;
+      try {
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        const notes = [523.25, 659.25, 783.99, 1046.5];
+        notes.forEach((freq, idx) => {
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(freq, ctx.currentTime + idx * 0.14);
+          gain.gain.setValueAtTime(0.18, ctx.currentTime + idx * 0.14);
+          gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + idx * 0.14 + 0.35);
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.start(ctx.currentTime + idx * 0.14);
+          osc.stop(ctx.currentTime + idx * 0.14 + 0.35);
+        });
+      } catch (e) {}
+    }
+
+    function setTimerTab(tabMode) {
+      clearInterval(timerInterval);
+      timerRunning = false;
+      timerActiveView = false;
+      state.timerConfig.mode = tabMode;
+      saveState();
+      render();
+    }
+
+    function adjustTimerValue(key, delta, minVal, maxVal) {
+      let current = state.timerConfig[key] || minVal;
+      current = Math.max(minVal, Math.min(maxVal, current + delta));
+      state.timerConfig[key] = current;
+      saveState();
+      render();
+    }
+
+    function toggleAlertSound() {
+      state.timerConfig.alertSound = !state.timerConfig.alertSound;
+      saveState();
+      if (state.timerConfig.alertSound) playAlertChime();
+      render();
+    }
+
+    function startTimerWidget() {
+      const cfg = state.timerConfig;
+      timerActiveView = true;
+      timerRunning = true;
+
+      if (cfg.mode === 'Countdown') {
+        timerSeconds = cfg.countdownMin * 60;
+      } else {
+        pomoCurrentRound = 1;
+        pomoPhase = 'Focus';
+        timerSeconds = cfg.focusMin * 60;
+      }
+
+      runTimerLoop();
+      render();
+    }
+
+    function runTimerLoop() {
+      clearInterval(timerInterval);
+      timerInterval = setInterval(() => {
+        if (!timerRunning) return;
+        const cfg = state.timerConfig;
+
+        if (timerSeconds > 0) {
+          timerSeconds--;
+          updateLiveTimerDom();
+        } else {
+          if (cfg.mode === 'Countdown') {
+            clearInterval(timerInterval);
+            timerRunning = false;
+            timerActiveView = false;
+            state.studyBlocksCompleted = (state.studyBlocksCompleted || 9) + 1;
+            state.notifications.unshift({
+              id: 'n_' + Date.now(),
+              title: '⏱️ Countdown Completed!',
+              body: `You completed your ${cfg.countdownMin}-minute study session. +1 Study Block logged!`,
+              time: 'Just now',
+              unread: true
+            });
+            saveState();
+            dispatchNativeNotification(
+              '⏱️ Countdown Finished!',
+              `Great job, ${state.profile.name}! Your ${cfg.countdownMin} min study block is complete.`
+            );
+            render();
+          } else {
+            handlePomodoroTransition();
+          }
+        }
+      }, 1000);
+    }
+
+    function handlePomodoroTransition() {
+      const cfg = state.timerConfig;
+      if (pomoPhase === 'Focus') {
+        state.studyBlocksCompleted = (state.studyBlocksCompleted || 9) + 1;
+        saveState();
+        if (pomoCurrentRound >= cfg.rounds) {
+          clearInterval(timerInterval);
+          timerRunning = false;
+          timerActiveView = false;
+          dispatchNativeNotification(
+            '🏆 Pomodoro Goal Reached!',
+            `All ${cfg.rounds} Focus rounds completed! Progress updated in your weekly tracker.`
+          );
+          render();
+          return;
+        }
+        if (pomoCurrentRound % 4 === 0) {
+          pomoPhase = 'Long Break';
+          timerSeconds = cfg.longBreakMin * 60;
+          dispatchNativeNotification(
+            '🌟 4 Focus Rounds Complete!',
+            `Time for a ${cfg.longBreakMin}-minute Long Break.`
+          );
+        } else {
+          pomoPhase = 'Short Break';
+          timerSeconds = cfg.shortBreakMin * 60;
+          dispatchNativeNotification(
+            `☕ Focus Round ${pomoCurrentRound} Done!`,
+            `Take a ${cfg.shortBreakMin}-minute Short Break.`
+          );
+        }
+      } else {
+        pomoCurrentRound++;
+        pomoPhase = 'Focus';
+        timerSeconds = cfg.focusMin * 60;
+        dispatchNativeNotification(
+          `🔥 Break Over — Round ${pomoCurrentRound}/${cfg.rounds}`,
+          `Starting your ${cfg.focusMin}-minute Focus session now!`
+        );
+      }
+      render();
+    }
+
+    function pauseResumeTimer() {
+      timerRunning = !timerRunning;
+      render();
+    }
+
+    function stopAndResetTimer() {
+      clearInterval(timerInterval);
+      timerRunning = false;
+      timerActiveView = false;
+      render();
+    }
+
+    function formatClock(sec) {
+      const hrs = Math.floor(sec / 3600);
+      const mins = Math.floor((sec % 3600) / 60).toString().padStart(2, '0');
+      const secs = (sec % 60).toString().padStart(2, '0');
+      return hrs > 0 ? `${hrs}:${mins}:${secs}` : `${mins}:${secs}`;
+    }
+
+    function updateLiveTimerDom() {
+      const el = document.getElementById('live-clock-digits');
+      if (el) el.textContent = formatClock(timerSeconds);
+    }
+
+    function renderThemedTimerWidget() {
+      const cfg = state.timerConfig;
+      const modes = ['Countdown', 'Pomodoro'];
+
+      return `
+        <div class="bg-card border rounded-3xl p-5 sm:p-6 shadow-sm transition-colors">
+          <div class="flex items-center justify-between mb-4">
+            <div>
+              <p class="text-[10px] font-mono uppercase tracking-widest text-[#3A5A48] dark:text-[#88B899]">STUDY FOCUS TIMER</p>
+              <h3 class="font-bold text-base">Countdown & Pomodoro</h3>
+            </div>
+            <span class="text-xs px-2.5 py-1 rounded-full bg-[#DCE7DF] dark:bg-[#253932] text-[#214E38] dark:text-[#A3D9B5] font-medium">
+              ${state.studyBlocksCompleted}/${state.studyBlocksTarget} blocks done
+            </span>
+          </div>
+
+          <div class="bg-[#E8ECE6] dark:bg-[#121B18] p-1 rounded-2xl grid grid-cols-2 gap-1 mb-6">
+            ${modes.map(m => {
+              const active = cfg.mode === m;
+              return `
+                <button
+                  onclick="setTimerTab('${m}')"
+                  class="py-2.5 px-4 rounded-xl text-xs sm:text-sm font-semibold transition-all ${active ? 'bg-card text-[#1A2421] dark:text-white shadow-sm' : 'text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200'}"
+                >
+                  ${m}
+                </button>
+              `;
+            }).join('')}
+          </div>
+
+          ${timerActiveView ? `
+            <div class="py-5 text-center space-y-4">
+              <div class="text-xs font-mono uppercase tracking-widest text-[#2C6E49] dark:text-[#98C9A3]">
+                ${cfg.mode === 'Pomodoro' ? `${pomoPhase} • Round ${pomoCurrentRound} of ${cfg.rounds}` : 'Countdown Session'}
+              </div>
+              <div id="live-clock-digits" class="text-5xl sm:text-6xl font-display font-bold tracking-tight">
+                ${formatClock(timerSeconds)}
+              </div>
+              <div class="flex items-center justify-center gap-3 pt-3 max-w-sm mx-auto">
+                <button onclick="pauseResumeTimer()" class="flex-1 py-3.5 rounded-2xl bg-[#245940] hover:bg-[#1B4531] text-white font-semibold text-sm transition shadow-sm">
+                  ${timerRunning ? 'Pause' : 'Resume'}
+                </button>
+                <button onclick="stopAndResetTimer()" class="px-6 py-3.5 rounded-2xl border bg-[#F3F5F0] dark:bg-[#121B18] text-gray-700 dark:text-gray-200 hover:opacity-80 font-semibold text-sm transition">
+                  Reset
+                </button>
+              </div>
+            </div>
+          ` : cfg.mode === 'Countdown' ? `
+            <div class="space-y-5">
+              <div class="flex items-center justify-between py-1">
+                <div class="inline-flex items-center rounded-full border border-gray-300 dark:border-[#2E423B] overflow-hidden bg-[#F4F6F2] dark:bg-[#121B18]">
+                  <button onclick="adjustTimerValue('countdownMin', -5, 5, 180)" class="px-6 py-2.5 text-[#245940] dark:text-[#98C9A3] hover:bg-[#DCE7DF]/50 dark:hover:bg-white/5 text-xl font-semibold transition">−</button>
+                  <div class="w-[1px] h-6 bg-gray-300 dark:bg-[#2E423B]"></div>
+                  <button onclick="adjustTimerValue('countdownMin', 5, 5, 180)" class="px-6 py-2.5 text-[#245940] dark:text-[#98C9A3] hover:bg-[#DCE7DF]/50 dark:hover:bg-white/5 text-xl font-semibold transition">+</button>
+                </div>
+
+                <div onclick="adjustTimerValue('countdownMin', 5, 5, 180)" class="flex items-center gap-2 text-lg font-semibold cursor-pointer select-none">
+                  <span>${cfg.countdownMin} min</span>
+                  <i data-lucide="chevrons-up-down" class="w-4 h-4 text-gray-400"></i>
+                </div>
+              </div>
+
+              <div class="border-t border-gray-200 dark:border-[#263530]"></div>
+
+              <div class="flex items-center justify-between py-1">
+                <span class="text-sm sm:text-base font-medium">Alert Sound & Push Notification</span>
+                <button
+                  onclick="toggleAlertSound()"
+                  class="w-14 h-8 rounded-full p-1 transition-colors flex items-center ${cfg.alertSound ? 'bg-[#245940] dark:bg-[#C5DF56] justify-end' : 'bg-gray-300 dark:bg-[#263530] justify-start'}"
+                >
+                  <span class="w-6 h-6 rounded-full ${cfg.alertSound ? 'bg-white dark:bg-[#1A2421]' : 'bg-white'} shadow-md"></span>
+                </button>
+              </div>
+
+              <button onclick="startTimerWidget()" class="w-full py-3.5 rounded-2xl bg-[#245940] hover:bg-[#1B4531] dark:bg-[#C5DF56] dark:hover:bg-[#b5cf46] text-white dark:text-[#1A2421] font-semibold text-base transition shadow-sm">
+                Start
+              </button>
+            </div>
+          ` : `
+            <div class="space-y-3.5">
+              <div class="flex items-center justify-between">
+                <span class="text-sm sm:text-base font-medium">Focus</span>
+                <div class="flex items-center gap-4">
+                  <span class="text-sm sm:text-base text-gray-500 dark:text-gray-400 font-medium">${cfg.focusMin} min</span>
+                  <div class="inline-flex items-center rounded-full border border-gray-300 dark:border-[#2E423B] overflow-hidden bg-[#F4F6F2] dark:bg-[#121B18]">
+                    <button onclick="adjustTimerValue('focusMin', -5, 5, 90)" class="px-5 py-2 text-[#245940] dark:text-[#98C9A3] hover:bg-[#DCE7DF]/50 text-lg font-semibold">−</button>
+                    <div class="w-[1px] h-5 bg-gray-300 dark:bg-[#2E423B]"></div>
+                    <button onclick="adjustTimerValue('focusMin', 5, 5, 90)" class="px-5 py-2 text-[#245940] dark:text-[#98C9A3] hover:bg-[#DCE7DF]/50 text-lg font-semibold">+</button>
+                  </div>
+                </div>
+              </div>
+
+              <div class="flex items-center justify-between">
+                <span class="text-sm sm:text-base font-medium">Short Break</span>
+                <div class="flex items-center gap-4">
+                  <span class="text-sm sm:text-base text-gray-500 dark:text-gray-400 font-medium">${cfg.shortBreakMin} min</span>
+                  <div class="inline-flex items-center rounded-full border border-gray-300 dark:border-[#2E423B] overflow-hidden bg-[#F4F6F2] dark:bg-[#121B18]">
+                    <button onclick="adjustTimerValue('shortBreakMin', -1, 1, 30)" class="px-5 py-2 text-[#245940] dark:text-[#98C9A3] hover:bg-[#DCE7DF]/50 text-lg font-semibold">−</button>
+                    <div class="w-[1px] h-5 bg-gray-300 dark:bg-[#2E423B]"></div>
+                    <button onclick="adjustTimerValue('shortBreakMin', 1, 1, 30)" class="px-5 py-2 text-[#245940] dark:text-[#98C9A3] hover:bg-[#DCE7DF]/50 text-lg font-semibold">+</button>
+                  </div>
+                </div>
+              </div>
+
+              <div class="flex items-center justify-between">
+                <span class="text-sm sm:text-base font-medium">Long Break</span>
+                <div class="flex items-center gap-4">
+                  <span class="text-sm sm:text-base text-gray-500 dark:text-gray-400 font-medium">${cfg.longBreakMin} min</span>
+                  <div class="inline-flex items-center rounded-full border border-gray-300 dark:border-[#2E423B] overflow-hidden bg-[#F4F6F2] dark:bg-[#121B18]">
+                    <button onclick="adjustTimerValue('longBreakMin', -5, 5, 60)" class="px-5 py-2 text-[#245940] dark:text-[#98C9A3] hover:bg-[#DCE7DF]/50 text-lg font-semibold">−</button>
+                    <div class="w-[1px] h-5 bg-gray-300 dark:bg-[#2E423B]"></div>
+                    <button onclick="adjustTimerValue('longBreakMin', 5, 5, 60)" class="px-5 py-2 text-[#245940] dark:text-[#98C9A3] hover:bg-[#DCE7DF]/50 text-lg font-semibold">+</button>
+                  </div>
+                </div>
+              </div>
+
+              <div class="flex items-center justify-between">
+                <span class="text-sm sm:text-base font-medium">Rounds</span>
+                <div class="flex items-center gap-4">
+                  <span class="text-sm sm:text-base text-gray-500 dark:text-gray-400 font-medium">${cfg.rounds}</span>
+                  <div class="inline-flex items-center rounded-full border border-gray-300 dark:border-[#2E423B] overflow-hidden bg-[#F4F6F2] dark:bg-[#121B18]">
+                    <button onclick="adjustTimerValue('rounds', -1, 1, 12)" class="px-5 py-2 text-[#245940] dark:text-[#98C9A3] hover:bg-[#DCE7DF]/50 text-lg font-semibold">−</button>
+                    <div class="w-[1px] h-5 bg-gray-300 dark:bg-[#2E423B]"></div>
+                    <button onclick="adjustTimerValue('rounds', 1, 1, 12)" class="px-5 py-2 text-[#245940] dark:text-[#98C9A3] hover:bg-[#DCE7DF]/50 text-lg font-semibold">+</button>
+                  </div>
+                </div>
+              </div>
+
+              <p class="text-xs text-gray-500 dark:text-gray-400 pt-1">Every 4 focus rounds earns you a long break.</p>
+
+              <div class="border-t border-gray-200 dark:border-[#263530] pt-3 flex items-center justify-between">
+                <span class="text-sm font-medium">Alert Sound & Push Notification</span>
+                <button
+                  onclick="toggleAlertSound()"
+                  class="w-12 h-7 rounded-full p-1 transition-colors flex items-center ${cfg.alertSound ? 'bg-[#245940] dark:bg-[#C5DF56] justify-end' : 'bg-gray-300 dark:bg-[#263530] justify-start'}"
+                >
+                  <span class="w-5 h-5 rounded-full ${cfg.alertSound ? 'bg-white dark:bg-[#1A2421]' : 'bg-white'} shadow-md"></span>
+                </button>
+              </div>
+
+              <button onclick="startTimerWidget()" class="w-full py-3.5 rounded-2xl bg-[#245940] hover:bg-[#1B4531] dark:bg-[#C5DF56] dark:hover:bg-[#b5cf46] text-white dark:text-[#1A2421] font-semibold text-base transition shadow-sm mt-2">
+                Start
+              </button>
+            </div>
+          `}
+        </div>
+      `;
+    }
+
+    // ==========================================
+    // HEADER & BOTTOM NAVIGATION
+    // ==========================================
+    function setTab(tab) {
+      state.activeTab = tab;
+      saveState();
+      render();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function renderHeader() {
+      const initial = (state.profile.name || 'A').charAt(0).toUpperCase();
+      const unreadCount = (state.notifications || []).filter(n => n.unread).length;
+
+      return `
+        <header class="max-w-4xl mx-auto pt-5 pb-4 px-4 sm:px-6 flex items-center justify-between">
+          <div class="flex items-center gap-3 cursor-pointer" onclick="setTab('home')">
+            <div class="w-12 h-12 rounded-full bg-card border flex items-center justify-center shadow-sm p-1 overflow-hidden shrink-0">
+              ${getSpbuLogoHtml("w-10 h-10")}
+            </div>
+            <div>
+              <div class="flex items-center gap-2">
+                <h1 class="font-display font-bold text-base leading-tight">${state.profile.institutionLabel}</h1>
+                ${state.ownerMode ? `<span class="text-[10px] px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-700 dark:text-amber-300 font-mono font-bold">OWNER</span>` : ''}
+              </div>
+              <p class="text-xs text-gray-500 dark:text-gray-400 truncate max-w-[190px] sm:max-w-xs">
+                ${state.profile.institutionLabel} • ${state.profile.groupLabel}
+              </p>
+            </div>
+          </div>
+          <div class="flex items-center gap-2">
+            <button onclick="openNotificationsModal()" title="Notifications" class="relative w-9 h-9 rounded-full bg-card border flex items-center justify-center hover:bg-gray-100 dark:hover:bg-gray-800 transition">
+              <i data-lucide="bell" class="w-4 h-4 text-gray-600 dark:text-gray-300"></i>
+              ${unreadCount > 0 ? `<span class="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-red-500 text-white text-[10px] font-bold flex items-center justify-center">${unreadCount}</span>` : ''}
+            </button>
+            <button onclick="setTab('settings')" title="Profile" class="w-9 h-9 rounded-full bg-[#2C6E49] text-white font-semibold text-sm flex items-center justify-center shadow-sm hover:opacity-90 transition">
+              ${initial}
+            </button>
+            <button onclick="setTab('settings')" title="Settings" class="w-9 h-9 rounded-full bg-card border flex items-center justify-center hover:bg-gray-100 dark:hover:bg-gray-800 transition ${state.activeTab === 'settings' ? 'ring-2 ring-[#2C6E49]' : ''}">
+              <i data-lucide="more-horizontal" class="w-4 h-4 text-gray-600 dark:text-gray-300"></i>
+            </button>
+          </div>
+        </header>
+      `;
+    }
+
+    function renderBottomNav() {
+      const tabs = [
+        { id: 'home', label: 'Home', icon: 'graduation-cap' },
+        { id: 'university', label: 'University', icon: 'users' },
+        { id: 'tasks', label: 'Tasks', icon: 'check-square' },
+        { id: 'calendar', label: 'Calendar', icon: 'calendar' },
+        { id: 'library', label: 'Library', icon: 'book-open' }
+      ];
+      return `
+        <nav class="fixed bottom-4 left-1/2 -translate-x-1/2 z-40 w-[94%] max-w-xl bg-card/95 backdrop-blur-md border rounded-2xl shadow-lg px-2 py-1.5 flex items-center justify-around">
+          ${tabs.map(t => {
+            const active = state.activeTab === t.id;
+            return `
+              <button onclick="setTab('${t.id}')" class="flex flex-col items-center justify-center py-1.5 px-3.5 rounded-xl transition-all ${active ? 'bg-[#DCE7DF] dark:bg-[#253932] text-[#214E38] dark:text-[#A3D9B5] font-semibold' : 'text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200'}">
+                <i data-lucide="${t.icon}" class="w-4 h-4 mb-0.5"></i>
+                <span class="text-[11px]">${t.label}</span>
+              </button>
+            `;
+          }).join('')}
+        </nav>
+      `;
+    }
+
+    // ==========================================
+    // ONBOARDING & DEMO SIGN-IN SCREENS
+    // ==========================================
+    function renderSetupStep1() {
+      return `
+        <div class="max-w-lg mx-auto pt-10 px-4">
+          <div class="flex items-center gap-3 mb-6">
+            <div class="w-12 h-12 rounded-full bg-card border flex items-center justify-center p-1 shadow-sm overflow-hidden">
+              ${getSpbuLogoHtml("w-10 h-10")}
+            </div>
+            <div>
+              <div class="font-bold text-base">Med7 SPBU</div>
+              <div class="text-xs text-gray-500">study, with room to breathe</div>
+            </div>
+          </div>
+
+          <div class="bg-card border rounded-3xl p-6 sm:p-8 shadow-sm">
+            <p class="text-[11px] font-semibold tracking-widest uppercase text-[#3A5A48] dark:text-[#88B899] mb-2">FIRST TIME SETUP</p>
+            <h2 class="text-2xl sm:text-3xl font-display font-bold mb-2">Make this space yours.</h2>
+            <p class="text-sm text-gray-500 dark:text-gray-400 mb-6">Start with a student name and the subgroup used for your Week 5 schedule.</p>
+
+            <label class="block text-xs font-semibold uppercase tracking-wider text-gray-500 mb-2">STUDENT NAME</label>
+            <input id="setup-name" type="text" value="${state.profile.name}" placeholder="e.g. Abd-Alrahman Ezzat" class="w-full px-4 py-3 rounded-xl border bg-[#F9FAF7] dark:bg-[#121B18] focus:outline-none focus:ring-2 focus:ring-[#2C6E49] mb-5 text-sm" />
+
+            <label class="block text-xs font-semibold uppercase tracking-wider text-gray-500 mb-2">ASSIGNED SUBGROUP</label>
+            <div class="grid grid-cols-2 gap-3 mb-6">
+              <button type="button" onclick="selectSetupGroup('Group A')" class="p-3.5 rounded-xl border text-left transition ${state.profile.subgroup === 'Group A' ? 'bg-[#DCE7DF] dark:bg-[#253932] border-[#2C6E49] font-semibold' : 'bg-[#F9FAF7] dark:bg-[#121B18]'}">
+                <div class="text-sm">Group A</div>
+                <div class="text-xs text-gray-500">SPBU-GM 2nd Year</div>
+              </button>
+              <button type="button" onclick="selectSetupGroup('Group B')" class="p-3.5 rounded-xl border text-left transition ${state.profile.subgroup === 'Group B' ? 'bg-[#DCE7DF] dark:bg-[#253932] border-[#2C6E49] font-semibold' : 'bg-[#F9FAF7] dark:bg-[#121B18]'}">
+                <div class="text-sm">Group B</div>
+                <div class="text-xs text-gray-500">SPBU-GM 2nd Year</div>
+              </button>
+            </div>
+
+            <button onclick="goToSetupStep2()" class="w-full py-3.5 rounded-xl bg-[#245940] hover:bg-[#1B4531] text-white font-semibold text-sm transition shadow-sm">
+              Continue to demo sign-in
+            </button>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderSetupStep2() {
+      return `
+        <div class="max-w-lg mx-auto pt-10 px-4">
+          <div class="flex items-center gap-3 mb-6">
+            <div class="w-12 h-12 rounded-full bg-card border flex items-center justify-center p-1 shadow-sm overflow-hidden">
+              ${getSpbuLogoHtml("w-10 h-10")}
+            </div>
+            <div>
+              <div class="font-bold text-base">Med7 SPBU</div>
+              <div class="text-xs text-gray-500">study, with room to breathe</div>
+            </div>
+          </div>
+
+          <div class="bg-card border rounded-3xl p-6 sm:p-8 shadow-sm">
+            <button onclick="state.onboardingStep='setup1'; saveState(); render();" class="text-xs text-gray-500 hover:underline flex items-center gap-1 mb-4">
+              ← Back to setup
+            </button>
+            <p class="text-[11px] font-semibold tracking-widest uppercase text-[#3A5A48] dark:text-[#88B899] mb-2">DEMO SIGN-IN</p>
+            <h2 class="text-2xl sm:text-3xl font-display font-bold mb-2">One last check.</h2>
+            <p class="text-sm text-gray-500 dark:text-gray-400 mb-6">Use a sample name and a clearly marked Demo ID. No real student account is created.</p>
+
+            <label class="block text-xs font-semibold uppercase tracking-wider text-gray-500 mb-2">DEMO ID</label>
+            <input id="setup-demoid" type="text" value="${state.profile.demoId}" class="w-full px-4 py-3 rounded-xl border bg-[#F9FAF7] dark:bg-[#121B18] focus:outline-none focus:ring-2 focus:ring-[#2C6E49] mb-1 text-sm" />
+            <p class="text-[11px] text-gray-400 uppercase tracking-wider mb-5">DEMO ID ONLY — DO NOT ENTER A REAL STUDENT ID.</p>
+
+            <div class="p-4 rounded-xl bg-[#F4F6F2] dark:bg-[#121B18] border mb-6 flex items-center justify-between">
+              <div>
+                <div class="text-[10px] font-semibold uppercase tracking-wider text-gray-400">NAME FOR THIS SESSION</div>
+                <div class="text-sm font-semibold mt-0.5">${state.profile.name}</div>
+              </div>
+              <span class="text-xs px-2.5 py-1 rounded-full bg-[#DCE7DF] dark:bg-[#253932] text-[#214E38] dark:text-[#A3D9B5] font-medium">${state.profile.subgroup}</span>
+            </div>
+
+            <button onclick="finishOnboarding()" class="w-full py-3.5 rounded-xl bg-[#245940] hover:bg-[#1B4531] text-white font-semibold text-sm transition shadow-sm">
+              Enter workspace
+            </button>
+          </div>
+        </div>
+      `;
+    }
+
+    function selectSetupGroup(grp) {
+      const nameInput = document.getElementById('setup-name');
+      if (nameInput) state.profile.name = nameInput.value.trim() || 'abdo';
+      state.profile.subgroup = grp;
+      saveState();
+      render();
+    }
+
+    function goToSetupStep2() {
+      const nameInput = document.getElementById('setup-name');
+      state.profile.name = (nameInput && nameInput.value.trim()) ? nameInput.value.trim() : 'abdo';
+      state.onboardingStep = 'setup2';
+      saveState();
+      render();
+    }
+
+    function finishOnboarding() {
+      const idInput = document.getElementById('setup-demoid');
+      if (idInput && idInput.value.trim()) state.profile.demoId = idInput.value.trim();
+      state.onboardingStep = 'done';
+      state.activeTab = 'home';
+      saveState();
+      showToast('Signed in as ' + state.profile.name + ' (' + state.profile.subgroup + ')', 'Welcome');
+      render();
+    }
+
+    // ==========================================
+    // HOME TAB
+    // ==========================================
+    function calculateDaysLeft(dateStr) {
+      const today = new Date('2026-10-31T00:00:00');
+      const target = new Date(dateStr + 'T00:00:00');
+      const diff = Math.ceil((target - today) / (1000 * 60 * 60 * 24));
+      return diff >= 0 ? diff : 0;
+    }
+
+    function renderHome() {
+      const todayTasks = state.tasks.filter(t => t.dueGroup === 'TODAY');
+      const completedToday = todayTasks.filter(t => t.completed).length;
+      const blocksDone = state.studyBlocksCompleted || 9;
+      const blocksTotal = state.studyBlocksTarget || 18;
+      const weekPercent = Math.min(100, Math.round((blocksDone / blocksTotal) * 100));
+      const tomorrowTask = state.tasks.find(t => !t.completed && t.dueGroup !== 'TODAY') || state.tasks[0];
+      const myEvents = state.calendar.filter(e => e.group === 'All groups' || e.group === state.profile.subgroup);
+      const nextLecture = myEvents[0] || state.calendar[0];
+
+      return `
+        <main class="max-w-4xl mx-auto px-4 sm:px-6 space-y-6">
+          <div>
+            <p class="text-[11px] font-semibold uppercase tracking-widest text-[#3A5A48] dark:text-[#88B899]">
+              SATURDAY, OCTOBER 31, 2026 • ${state.profile.subgroup.toUpperCase()}
+            </p>
+            <h2 class="text-3xl sm:text-4xl font-display font-bold mt-1">Good morning, ${state.profile.name}.</h2>
+            <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">A clear place for the next right thing.</p>
+          </div>
+
+          <div class="bg-[#1A2421] text-white rounded-3xl p-5 sm:p-6 shadow-md">
+            <div class="flex items-center justify-between mb-4">
+              <span class="text-[11px] font-semibold uppercase tracking-widest text-[#C5DF56]">TODAY'S PLAN</span>
+              <span class="text-xs px-3 py-1 rounded-full bg-white/10 text-gray-200 font-medium">
+                ${completedToday}/${todayTasks.length} complete
+              </span>
+            </div>
+
+            <div class="space-y-2.5 mb-5">
+              ${todayTasks.length === 0 ? `
+                <div class="text-sm text-gray-400 py-3">No tasks for today yet. Add one below!</div>
+              ` : todayTasks.map(t => `
+                <div onclick="toggleTask('${t.id}')" class="flex items-start gap-3 p-3 rounded-2xl bg-white/5 hover:bg-white/10 transition cursor-pointer">
+                  <div class="mt-0.5 w-5 h-5 rounded-md border ${t.completed ? 'bg-[#C5DF56] border-[#C5DF56] text-[#1A2421]' : 'border-gray-500'} flex items-center justify-center">
+                    ${t.completed ? '<i data-lucide="check" class="w-3.5 h-3.5 stroke-[3]"></i>' : ''}
+                  </div>
+                  <div class="flex-1">
+                    <div class="text-sm font-medium ${t.completed ? 'line-through text-gray-400' : 'text-white'}">${t.title}</div>
+                    <div class="text-xs text-gray-400 font-mono mt-0.5">${t.subject}</div>
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+
+            <button onclick="openAddTaskModal('TODAY')" class="w-full py-3 rounded-2xl bg-[#C5DF56] hover:bg-[#b5cf46] text-[#1A2421] font-semibold text-sm flex items-center justify-center gap-1.5 transition">
+              <i data-lucide="plus" class="w-4 h-4"></i> Add a task
+            </button>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <div class="flex items-center justify-between mb-2">
+                <h3 class="font-semibold text-sm">Coming up</h3>
+                <button onclick="setTab('tasks')" class="text-xs text-[#2C6E49] dark:text-[#88B899] font-medium hover:underline">Open Tasks & Timer ›</button>
+              </div>
+              <div onclick="setTab('tasks')" class="bg-card border rounded-2xl p-4 cursor-pointer hover:shadow-sm transition">
+                <div class="flex items-center gap-1.5 text-xs text-[#3A5A48] dark:text-[#88B899] font-mono mb-1.5">
+                  <i data-lucide="calendar" class="w-3.5 h-3.5"></i> Due ${tomorrowTask ? tomorrowTask.dueLabel : 'Tomorrow'}
+                </div>
+                <div class="font-semibold text-sm mb-1">${tomorrowTask ? tomorrowTask.title : 'All caught up!'}</div>
+                <div class="text-xs text-gray-500 flex items-center gap-1">
+                  <i data-lucide="book-open" class="w-3.5 h-3.5"></i> ${tomorrowTask ? tomorrowTask.subject : 'General Medicine'}
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <div class="flex items-center justify-between mb-2">
+                <h3 class="font-semibold text-sm">Next lecture (${state.profile.subgroup})</h3>
+                <span class="text-xs px-2 py-0.5 rounded-md bg-[#DCE7DF] dark:bg-[#253932] text-[#214E38] dark:text-[#A3D9B5] font-mono">${nextLecture ? nextLecture.time : '09:00'}</span>
+              </div>
+              <div onclick="setTab('calendar')" class="bg-card border rounded-2xl p-4 cursor-pointer hover:shadow-sm transition">
+                <div class="flex items-center gap-1.5 text-xs text-gray-500 font-mono mb-1.5">
+                  <i data-lucide="video" class="w-3.5 h-3.5"></i> ${nextLecture ? nextLecture.subtitle : 'lms.spbu.ru/moodle'}
+                </div>
+                <div class="font-semibold text-sm mb-1">${nextLecture ? nextLecture.title : 'Medical Genetics — Lecture 5'}</div>
+                <div class="text-xs text-[#2C6E49] dark:text-[#88B899] font-medium flex items-center gap-1">
+                  <i data-lucide="external-link" class="w-3.5 h-3.5"></i> Open in Calendar (lms.spbu.ru)
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div onclick="setTab('tasks')" class="bg-card border rounded-2xl p-5 cursor-pointer hover:border-[#2C6E49] transition">
+            <div class="flex items-center justify-between mb-3">
+              <h3 class="font-semibold text-sm">This week, in view</h3>
+              <span class="text-[11px] px-2.5 py-0.5 rounded-full bg-[#C5DF56]/40 text-[#284B37] dark:text-[#C5DF56] font-medium">steady pace</span>
+            </div>
+            <div class="flex items-center justify-between gap-4">
+              <div class="flex items-center gap-4">
+                <div class="w-14 h-14 rounded-full border-4 border-[#2C6E49] flex items-center justify-center font-bold text-sm shrink-0">
+                  ${weekPercent}%
+                </div>
+                <div>
+                  <div class="font-semibold text-sm">${blocksDone} of ${blocksTotal} study blocks planned</div>
+                  <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">Tap to open Countdown & Pomodoro in Tasks.</p>
+                </div>
+              </div>
+              <i data-lucide="chevron-right" class="w-5 h-5 text-gray-400"></i>
+            </div>
+          </div>
+
+          <div class="bg-card border rounded-2xl p-5 space-y-3">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-2">
+                <i data-lucide="flame" class="w-4 h-4 text-amber-500"></i>
+                <h3 class="font-bold text-sm">Upcoming Colloquiums & Zachet Countdown</h3>
+              </div>
+              ${state.ownerMode ? `<button onclick="openAddExamModal()" class="text-xs text-[#2C6E49] dark:text-[#88B899] font-semibold hover:underline">+ Add Exam (Owner)</button>` : ''}
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              ${(state.exams || []).map(ex => {
+                const daysLeft = calculateDaysLeft(ex.date);
+                return `
+                  <div class="p-3.5 rounded-2xl bg-[#F4F6F2] dark:bg-[#121B18] border flex flex-col justify-between">
+                    <div>
+                      <div class="flex items-center justify-between gap-2 mb-1">
+                        <span class="text-[10px] font-mono uppercase px-2 py-0.5 rounded-md bg-[#DCE7DF] dark:bg-[#253932] text-[#214E38] dark:text-[#A3D9B5] font-semibold">${ex.type}</span>
+                        <span class="text-xs font-bold text-amber-600 dark:text-amber-400 font-mono">${daysLeft} days left</span>
+                      </div>
+                      <h4 class="font-semibold text-xs leading-snug mt-1">${ex.title}</h4>
+                    </div>
+                    <div class="text-[11px] text-gray-500 font-mono mt-2 pt-2 border-t border-gray-200/60 dark:border-gray-800 flex items-center justify-between">
+                      <span>${ex.room}</span>
+                      ${state.ownerMode ? `<button onclick="deleteExam('${ex.id}')" class="text-red-500 hover:underline">Delete</button>` : ''}
+                    </div>
+                  </div>
+                `;
+              }).join('')}
+            </div>
+          </div>
+        </main>
+      `;
+    }
+
+    function deleteExam(id) {
+      if (!state.ownerMode) return;
+      state.exams = state.exams.filter(e => e.id !== id);
+      saveState();
+      render();
+    }
+
+    // ==========================================
+    // UNIVERSITY TAB
+    // ==========================================
+    function renderUniversity() {
+      const subTabs = ['Schedules', 'Assignments', 'Announcements'];
+      const currentItems = state.uniContent[state.uniSubTab] || [];
+
+      return `
+        <main class="max-w-4xl mx-auto px-4 sm:px-6 space-y-6">
+          <div>
+            <p class="text-[11px] font-semibold uppercase tracking-widest text-[#3A5A48] dark:text-[#88B899]">YOUR UNIVERSITY SPACE</p>
+            <h2 class="text-3xl font-display font-bold mt-1">General Medicine</h2>
+            <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">A subject-based home for ${state.profile.institutionLabel}. Linked to General Med Telegram Topics.</p>
+          </div>
+
+          <div class="bg-card border rounded-2xl p-5 flex items-center justify-between">
+            <div>
+              <p class="text-[10px] font-mono uppercase tracking-wider text-gray-400">SPBU-GM 2ND YEAR • ${state.profile.groupLabel.toUpperCase()}</p>
+              <h3 class="text-lg font-bold mt-1">General Medicine — ${state.profile.subgroup}</h3>
+              <p class="text-xs text-gray-500 mt-0.5">42 study members • ${state.subjects.length} subjects • Auto-Bridge Active</p>
+            </div>
+            <div class="w-12 h-12 rounded-2xl bg-card border flex items-center justify-center p-1 overflow-hidden shrink-0">
+              ${getSpbuLogoHtml("w-10 h-10")}
+            </div>
+          </div>
+
+          <div>
+            <div class="flex items-center justify-between mb-3">
+              <h3 class="font-bold text-base">Subjects</h3>
+              <span class="text-xs text-gray-500 font-mono">${state.subjects.length} active</span>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              ${state.subjects.map(sub => `
+                <div onclick="openSubjectModal('${sub.id}')" class="bg-card border rounded-2xl p-4 flex items-center justify-between cursor-pointer hover:border-[#2C6E49] hover:shadow-sm transition group">
+                  <div class="flex items-start gap-3 pr-2">
+                    <span class="w-8 h-8 rounded-lg bg-[#DCE7DF] dark:bg-[#253932] text-[#214E38] dark:text-[#A3D9B5] font-mono text-xs font-bold flex items-center justify-center shrink-0 mt-0.5">
+                      ${sub.code}
+                    </span>
+                    <div>
+                      <h4 class="font-semibold text-sm leading-snug group-hover:text-[#2C6E49] dark:group-hover:text-[#98C9A3] transition">${sub.title}</h4>
+                      <p class="text-xs text-gray-500 font-mono mt-1">${sub.category} • ${sub.resourcesCount} resources</p>
+                    </div>
+                  </div>
+                  <i data-lucide="chevron-right" class="w-4 h-4 text-gray-400 shrink-0"></i>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+
+          <div class="space-y-3">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <h3 class="font-bold text-base">University content</h3>
+              ${state.ownerMode ? `
+                <button onclick="openAddUniContentModal()" class="text-xs px-3 py-1.5 rounded-lg bg-[#245940] text-white font-semibold">
+                  + Add ${state.uniSubTab.slice(0, -1)} (Owner)
+                </button>
+              ` : `<span class="text-[11px] font-mono text-gray-400">Synced Content</span>`}
+            </div>
+
+            <div class="bg-[#E8ECE6] dark:bg-[#16201D] p-1 rounded-xl inline-flex gap-1">
+              ${subTabs.map(st => `
+                <button onclick="state.uniSubTab='${st}'; saveState(); render();" class="px-4 py-1.5 rounded-lg text-xs font-medium transition ${state.uniSubTab === st ? 'bg-card shadow-sm text-gray-900 dark:text-white font-semibold' : 'text-gray-600 dark:text-gray-400'}">
+                  ${st}
+                </button>
+              `).join('')}
+            </div>
+
+            <div class="space-y-2.5">
+              ${currentItems.map(item => `
+                <div class="bg-card border rounded-2xl p-4 flex items-start justify-between gap-3">
+                  <div class="flex items-start gap-3">
+                    <div class="w-9 h-9 rounded-xl bg-[#DCE7DF] dark:bg-[#253932] text-[#214E38] dark:text-[#A3D9B5] flex items-center justify-center shrink-0">
+                      <i data-lucide="calendar-check" class="w-4 h-4"></i>
+                    </div>
+                    <div>
+                      <h4 class="font-semibold text-sm">${item.title}</h4>
+                      <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">${item.desc}</p>
+                    </div>
+                  </div>
+                  ${state.ownerMode ? `<button onclick="deleteUniContent('${item.id}')" class="text-xs text-red-500 hover:underline">Delete</button>` : ''}
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        </main>
+      `;
+    }
+
+    function deleteUniContent(id) {
+      if (!state.ownerMode) return;
+      state.uniContent[state.uniSubTab] = state.uniContent[state.uniSubTab].filter(i => i.id !== id);
+      saveState();
+      render();
+    }
+
+    // ==========================================
+    // TASKS TAB (WITH COUNTDOWN & POMODORO)
+    // ==========================================
+    function renderTasks() {
+      const filters = ['All tasks', 'To-do', 'Completed'];
+      let filtered = state.tasks;
+      if (state.taskFilter === 'To-do') filtered = state.tasks.filter(t => !t.completed);
+      if (state.taskFilter === 'Completed') filtered = state.tasks.filter(t => t.completed);
+
+      const groups = {};
+      filtered.forEach(t => {
+        if (!groups[t.dueGroup]) groups[t.dueGroup] = [];
+        groups[t.dueGroup].push(t);
+      });
+
+      return `
+        <main class="max-w-4xl mx-auto px-4 sm:px-6 space-y-6">
+          <div>
+            <p class="text-[11px] font-semibold uppercase tracking-widest text-[#3A5A48] dark:text-[#88B899]">PERSONAL PLANNER & FOCUS</p>
+            <h2 class="text-3xl font-display font-bold mt-1">Tasks</h2>
+            <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Small, visible steps and focused study sessions for a full week.</p>
+          </div>
+
+          ${renderThemedTimerWidget()}
+
+          <div class="flex flex-wrap items-center justify-between gap-3 pt-2">
+            <div class="flex items-center gap-1.5 bg-[#E8ECE6] dark:bg-[#16201D] p-1 rounded-xl">
+              ${filters.map(f => `
+                <button onclick="state.taskFilter='${f}'; saveState(); render();" class="px-3.5 py-1.5 rounded-lg text-xs font-medium transition ${state.taskFilter === f ? 'bg-card shadow-sm font-semibold' : 'text-gray-600 dark:text-gray-400'}">
+                  ${f}
+                </button>
+              `).join('')}
+            </div>
+            <button onclick="openAddTaskModal('TODAY')" class="px-4 py-2 rounded-xl bg-[#245940] hover:bg-[#1B4531] text-white text-xs font-semibold flex items-center gap-1.5 shadow-sm transition">
+              <i data-lucide="plus" class="w-4 h-4"></i> Add task
+            </button>
+          </div>
+
+          <div class="space-y-6">
+            ${Object.keys(groups).length === 0 ? `
+              <div class="bg-card border rounded-2xl p-8 text-center text-sm text-gray-500">
+                No tasks in "${state.taskFilter}". Click "+ Add task" to create one.
+              </div>
+            ` : Object.entries(groups).map(([grpName, items]) => `
+              <div class="space-y-2">
+                <div class="flex items-center justify-between text-[11px] font-mono uppercase tracking-wider text-gray-400 px-1">
+                  <span>${grpName}</span>
+                  <span>${items.length} ITEMS</span>
+                </div>
+                <div class="space-y-2">
+                  ${items.map(t => `
+                    <div class="bg-card border rounded-2xl p-4 flex items-center justify-between gap-3 hover:border-[#2C6E49] transition">
+                      <div onclick="toggleTask('${t.id}')" class="flex items-start gap-3 flex-1 cursor-pointer">
+                        <div class="mt-0.5 w-5 h-5 rounded-md border ${t.completed ? 'bg-[#2C6E49] border-[#2C6E49] text-white' : 'border-gray-300 dark:border-gray-600'} flex items-center justify-center shrink-0">
+                          ${t.completed ? '<i data-lucide="check" class="w-3.5 h-3.5 stroke-[3]"></i>' : ''}
+                        </div>
+                        <div>
+                          <div class="text-sm font-semibold ${t.completed ? 'line-through text-gray-400' : ''}">${t.title}</div>
+                          <div class="text-xs text-gray-500 font-mono mt-0.5">${t.subject}</div>
+                        </div>
+                      </div>
+                      <div class="flex items-center gap-2">
+                        <span class="text-xs px-2.5 py-1 rounded-lg bg-[#F3F5F0] dark:bg-[#253932] text-gray-600 dark:text-gray-300 font-medium">
+                          ${t.completed ? 'Done' : t.dueLabel}
+                        </span>
+                        <button onclick="deleteTask('${t.id}')" class="text-gray-400 hover:text-red-500 p-1">
+                          <i data-lucide="trash-2" class="w-4 h-4"></i>
+                        </button>
+                      </div>
+                    </div>
+                  `).join('')}
+                </div>
+              </div>
+            `).join('')}
+          </div>
+        </main>
+      `;
+    }
+
+    function toggleTask(taskId) {
+      const task = state.tasks.find(t => t.id === taskId);
+      if (task) {
+        task.completed = !task.completed;
+        saveState();
+        render();
+      }
+    }
+
+    function deleteTask(taskId) {
+      state.tasks = state.tasks.filter(t => t.id !== taskId);
+      saveState();
+      showToast('Task removed');
+      render();
+    }
+
+    // ==========================================
+    // CALENDAR TAB (OPENING https://lms.spbu.ru/moodle/?redirect=0)
+    // ==========================================
+    function renderCalendar() {
+      const grpFilters = ['My group', 'All groups', 'Group A', 'Group B'];
+      const currentDayObj = WEEK5_DAYS.find(d => d.num === state.selectedDay) || WEEK5_DAYS[0];
+
+      let events = state.calendar.filter(e => e.day === state.selectedDay);
+      if (state.calendarFilter === 'My group') {
+        events = events.filter(e => e.group === 'All groups' || e.group === state.profile.subgroup);
+      } else if (state.calendarFilter === 'Group A' || state.calendarFilter === 'Group B') {
+        events = events.filter(e => e.group === 'All groups' || e.group === state.calendarFilter);
+      }
+
+      return `
+        <main class="max-w-4xl mx-auto px-4 sm:px-6 space-y-6">
+          <div class="flex flex-wrap items-end justify-between gap-3">
+            <div>
+              <p class="text-[11px] font-semibold uppercase tracking-widest text-[#3A5A48] dark:text-[#88B899]">SPBU-GM 2ND YEAR • WEEK 5 SCHEDULE</p>
+              <h2 class="text-3xl font-display font-bold mt-1">Calendar</h2>
+              <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Showing ${state.calendarFilter === 'My group' ? state.profile.subgroup : state.calendarFilter} • ${currentDayObj.fullDate}</p>
+            </div>
+            ${state.ownerMode ? `
+              <button onclick="openAddEventModal()" class="px-3.5 py-2 rounded-xl bg-[#245940] text-white text-xs font-semibold flex items-center gap-1 shadow-sm">
+                <i data-lucide="plus" class="w-4 h-4"></i> Add event (Owner)
+              </button>
+            ` : ''}
+          </div>
+
+          <div class="flex flex-wrap items-center gap-2">
+            <span class="text-xs px-3 py-1.5 rounded-xl bg-[#E8ECE6] dark:bg-[#16201D] text-gray-600 dark:text-gray-300 font-medium">
+              Profile: ${state.profile.subgroup}
+            </span>
+            ${grpFilters.map(gf => `
+              <button onclick="state.calendarFilter='${gf}'; saveState(); render();" class="text-xs px-3.5 py-1.5 rounded-xl border transition ${state.calendarFilter === gf ? 'bg-card font-semibold border-[#2C6E49] shadow-sm' : 'border-transparent text-gray-500 hover:text-gray-800'}">
+                ${gf}
+              </button>
+            `).join('')}
+          </div>
+
+          <div class="grid grid-cols-7 gap-2">
+            ${WEEK5_DAYS.map(d => {
+              const active = state.selectedDay === d.num;
+              return `
+                <button onclick="state.selectedDay='${d.num}'; saveState(); render();" class="py-3 rounded-2xl flex flex-col items-center justify-center transition ${active ? 'bg-[#1A2421] text-white shadow-md' : 'bg-card border hover:border-[#2C6E49]'}">
+                  <span class="text-[10px] font-mono uppercase ${active ? 'text-gray-300' : 'text-gray-400'}">${d.name}</span>
+                  <span class="mt-1 w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold ${active ? 'bg-[#C5DF56] text-[#1A2421]' : ''}">
+                    ${d.num}
+                  </span>
+                </button>
+              `;
+            }).join('')}
+          </div>
+
+          <div class="space-y-3">
+            ${events.length === 0 ? `
+              <div class="bg-card border rounded-2xl p-8 text-center text-sm text-gray-500">
+                No lectures or practicals scheduled for this day.
+              </div>
+            ` : events.map(ev => `
+              <div class="flex items-start gap-3 sm:gap-4">
+                <span class="text-[11px] font-mono text-gray-500 pt-4 w-24 shrink-0">${ev.time}</span>
+                <div class="flex-1 bg-card border rounded-2xl p-4 space-y-3 shadow-sm">
+                  <div class="flex items-start justify-between gap-3">
+                    <div>
+                      <h4 class="font-semibold text-sm">${ev.title}</h4>
+                      <p class="text-xs text-gray-500 font-mono mt-1">${ev.subtitle}</p>
+                    </div>
+                    <span class="text-[11px] px-2.5 py-1 rounded-full bg-[#DCE7DF] dark:bg-[#253932] text-[#214E38] dark:text-[#A3D9B5] font-medium shrink-0">
+                      ${ev.group}
+                    </span>
+                  </div>
+                  <div class="pt-2 border-t border-gray-100 dark:border-gray-800 flex flex-wrap items-center justify-between gap-2">
+                    ${ev.isOnline ? `
+                      <a href="${SPBU_LMS_URL}" target="_blank" class="inline-flex items-center gap-1.5 text-xs font-semibold px-3.5 py-2 rounded-xl bg-[#245940] text-white hover:opacity-90 transition">
+                        <i data-lucide="external-link" class="w-3.5 h-3.5"></i> SPbU Moodle Portal (lms.spbu.ru)
+                      </a>
+                    ` : `
+                      <span class="inline-flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-xl bg-[#F3F5F0] dark:bg-[#253932] text-[#214E38] dark:text-[#A3D9B5]">
+                        <i data-lucide="map-pin" class="w-3.5 h-3.5"></i> ${ev.locationGuide || ev.subtitle}
+                      </span>
+                    `}
+                    ${state.ownerMode ? `<button onclick="deleteEvent('${ev.id}')" class="text-xs text-red-500 hover:underline">Delete (Owner)</button>` : ''}
+                  </div>
+                </div>
+              </div>
+            `).join('')}
+          </div>
+        </main>
+      `;
+    }
+
+    function deleteEvent(id) {
+      if (!state.ownerMode) return;
+      state.calendar = state.calendar.filter(e => e.id !== id);
+      saveState();
+      showToast('Event deleted');
+      render();
+    }
+
+    // ==========================================
+    // LIBRARY TAB
+    // ==========================================
+    function renderLibrary() {
+      const q = (state.librarySearch || '').toLowerCase();
+      let filtered = state.library.filter(f =>
+        f.title.toLowerCase().includes(q) || f.subject.toLowerCase().includes(q)
+      );
+      if (state.libraryFilter === 'Starred') {
+        filtered = filtered.filter(f => f.starred);
+      }
+
+      const grouped = {};
+      filtered.forEach(f => {
+        if (!grouped[f.subject]) grouped[f.subject] = [];
+        grouped[f.subject].push(f);
+      });
+
+      const starredCount = state.library.filter(f => f.starred).length;
+
+      return `
+        <main class="max-w-4xl mx-auto px-4 sm:px-6 space-y-6">
+          <div class="flex flex-wrap items-end justify-between gap-3">
+            <div>
+              <p class="text-[11px] font-semibold uppercase tracking-widest text-[#3A5A48] dark:text-[#88B899]">YOUR STUDY SHELF</p>
+              <h2 class="text-3xl font-display font-bold mt-1">Library</h2>
+              <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Pin high-yield files with ⭐ and preview PDFs directly inside the app.</p>
+            </div>
+            ${state.ownerMode ? `
+              <button onclick="openAddFileModal()" class="px-4 py-2 rounded-xl bg-[#245940] text-white text-xs font-semibold flex items-center gap-1.5 shadow-sm">
+                <i data-lucide="upload" class="w-4 h-4"></i> Upload file (Owner)
+              </button>
+            ` : ''}
+          </div>
+
+          <div class="flex flex-col sm:flex-row gap-3">
+            <div class="flex items-center gap-1.5 bg-[#E8ECE6] dark:bg-[#16201D] p-1 rounded-xl shrink-0">
+              <button onclick="state.libraryFilter='All'; saveState(); render();" class="px-3.5 py-2 rounded-lg text-xs font-medium transition ${state.libraryFilter === 'All' ? 'bg-card shadow-sm font-semibold' : 'text-gray-600 dark:text-gray-400'}">
+                All Files (${state.library.length})
+              </button>
+              <button onclick="state.libraryFilter='Starred'; saveState(); render();" class="px-3.5 py-2 rounded-lg text-xs font-medium transition ${state.libraryFilter === 'Starred' ? 'bg-card shadow-sm font-semibold text-amber-600' : 'text-gray-600 dark:text-gray-400'}">
+                ⭐ High-Yield (${starredCount})
+              </button>
+            </div>
+            <div class="relative flex-1">
+              <i data-lucide="search" class="w-4 h-4 text-gray-400 absolute left-4 top-1/2 -translate-y-1/2"></i>
+              <input
+                type="text"
+                value="${state.librarySearch}"
+                oninput="state.librarySearch = this.value; render();"
+                placeholder="Search subjects or files..."
+                class="w-full pl-11 pr-4 py-2.5 rounded-xl bg-card border text-sm focus:outline-none focus:ring-2 focus:ring-[#2C6E49]"
+              />
+            </div>
+          </div>
+
+          <div class="space-y-6">
+            ${Object.entries(grouped).map(([subj, files]) => `
+              <div class="space-y-2.5">
+                <div class="flex items-center justify-between px-1">
+                  <h3 class="font-bold text-sm">${subj}</h3>
+                  <span class="text-[11px] font-mono text-gray-400 uppercase">${files.length} FILES</span>
+                </div>
+                <div class="space-y-2">
+                  ${files.map(file => `
+                    <div class="bg-card border rounded-2xl p-4 flex items-center justify-between gap-3">
+                      <div class="flex items-center gap-3 min-w-0">
+                        <button onclick="toggleStarFile('${file.id}')" class="text-lg shrink-0">${file.starred ? '⭐' : '☆'}</button>
+                        <div class="truncate">
+                          <h4 class="font-semibold text-sm truncate">${file.title}</h4>
+                          <p class="text-xs text-gray-500 font-mono mt-0.5">${file.type} • ${file.size}</p>
+                        </div>
+                      </div>
+                      <div class="flex items-center gap-2 shrink-0">
+                        <button onclick="openInAppPdfViewer('${file.id}')" class="px-3.5 py-2 rounded-xl bg-[#245940] text-white text-xs font-semibold">
+                          Preview
+                        </button>
+                        ${state.ownerMode ? `<button onclick="deleteFile('${file.id}')" class="text-xs text-red-500 hover:underline px-1">✕</button>` : ''}
+                      </div>
+                    </div>
+                  `).join('')}
+                </div>
+              </div>
+            `).join('')}
+          </div>
+        </main>
+      `;
+    }
+
+    function toggleStarFile(fileId) {
+      const f = state.library.find(item => item.id === fileId);
+      if (f) {
+        f.starred = !f.starred;
+        saveState();
+        render();
+      }
+    }
+
+    function deleteFile(fileId) {
+      if (!state.ownerMode) return;
+      state.library = state.library.filter(f => f.id !== fileId);
+      saveState();
+      showToast('File removed');
+      render();
+    }
+
+    function openInAppPdfViewer(fileId) {
+      const f = state.library.find(item => item.id === fileId);
+      if (!f) return;
+      document.getElementById('modal-root').innerHTML = `
+        <div class="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
+          <div class="bg-card border rounded-3xl max-w-xl w-full p-6 space-y-4 shadow-2xl">
+            <div class="flex items-center justify-between">
+              <h3 class="font-bold text-base">${f.title}</h3>
+              <button onclick="closeModal()" class="text-gray-400 hover:text-gray-600">✕</button>
+            </div>
+            <p class="text-xs font-mono text-[#2C6E49] dark:text-[#88B899]">${f.subject} • ${f.size}</p>
+            <p class="text-sm text-gray-600 dark:text-gray-300 leading-relaxed">${f.summary}</p>
+            <div class="flex justify-end gap-2">
+              ${f.url && f.url !== '#' ? `<a href="${f.url}" target="_blank" class="px-4 py-2 rounded-xl border text-xs font-semibold">Open Original Link ↗</a>` : ''}
+              <button onclick="closeModal()" class="px-5 py-2 rounded-xl bg-[#245940] text-white text-xs font-semibold">Close Reader</button>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    // ==========================================
+    // SETTINGS & OWNER MODE
+    // ==========================================
+    function renderSettings() {
+      const permStatus = getNotificationStatus();
+
+      return `
+        <main class="max-w-3xl mx-auto px-4 sm:px-6 space-y-6">
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-[11px] font-semibold uppercase tracking-widest text-[#3A5A48] dark:text-[#88B899]">MORE & SETTINGS</p>
+              <h2 class="text-3xl font-display font-bold mt-1">Workspace settings</h2>
+              <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Manage notifications, profile, appearance, and Owner Mode.</p>
+            </div>
+            <button onclick="resetSessionSetup()" class="px-4 py-2 rounded-xl border border-red-300 text-red-600 text-xs font-semibold">
+              Sign Out
+            </button>
+          </div>
+
+          <div class="bg-card border rounded-3xl p-6 space-y-4">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-[#DCE7DF] dark:bg-[#253932] text-[#214E38] dark:text-[#A3D9B5] flex items-center justify-center">
+                  <i data-lucide="bell-ring" class="w-5 h-5"></i>
+                </div>
+                <div>
+                  <h3 class="font-bold text-base">Device Push Notifications (24/7)</h3>
+                  <p class="text-xs text-gray-500">Alerts for Pomodoro, new lecture files & announcements on Android, iOS, Windows & Mac.</p>
+                </div>
+              </div>
+              <span class="text-xs px-3 py-1 rounded-full font-semibold ${permStatus === 'granted' ? 'bg-green-100 text-green-800' : 'bg-amber-100 text-amber-800'}">
+                ${permStatus === 'granted' ? '● Active' : '● Tap to Enable'}
+              </span>
+            </div>
+
+            <div class="flex flex-wrap gap-2.5 pt-1">
+              <button onclick="requestDeviceNotificationPermission()" class="px-4 py-2.5 rounded-xl bg-[#245940] text-white text-xs font-semibold hover:opacity-90 transition">
+                ${permStatus === 'granted' ? 'Re-Sync Device Notifications' : '🔔 Enable Device Notifications'}
+              </button>
+              <button onclick="dispatchNativeNotification('Med7 SPBU — Test Alert 🔔', 'Notifications are working on your device for Pomodoro, Schedules & Library!')" class="px-4 py-2.5 rounded-xl border text-xs font-semibold hover:bg-gray-50 dark:hover:bg-white/5 transition">
+                Send Test Notification
+              </button>
+            </div>
+          </div>
+
+          <div class="bg-card border rounded-3xl p-6 space-y-4">
+            <h3 class="font-bold text-base">Profile & subgroup</h3>
+            <div>
+              <label class="block text-[11px] font-mono uppercase text-gray-500 mb-1">STUDENT NAME</label>
+              <input id="set-name" type="text" value="${state.profile.name}" class="w-full px-4 py-2.5 rounded-xl border bg-[#F9FAF7] dark:bg-[#121B18] text-sm" />
+            </div>
+            <div>
+              <label class="block text-[11px] font-mono uppercase text-gray-500 mb-1">SUBGROUP</label>
+              <select id="set-group" class="w-full px-4 py-2.5 rounded-xl border bg-[#F9FAF7] dark:bg-[#121B18] text-sm">
+                <option value="Group A" ${state.profile.subgroup === 'Group A' ? 'selected' : ''}>Group A</option>
+                <option value="Group B" ${state.profile.subgroup === 'Group B' ? 'selected' : ''}>Group B</option>
+              </select>
+            </div>
+            <button onclick="saveProfileSettings()" class="px-5 py-2.5 rounded-xl bg-[#245940] text-white text-xs font-semibold">
+              Save profile
+            </button>
+          </div>
+
+          <div class="bg-card border rounded-3xl p-6 space-y-4">
+            <h3 class="font-bold text-base">Appearance (Light & Dark Mode)</h3>
+            <div class="grid grid-cols-2 gap-3">
+              <button onclick="state.theme='light'; saveState(); render();" class="py-3 px-4 rounded-xl border text-xs font-semibold flex items-center justify-center gap-2 ${state.theme === 'light' ? 'bg-[#DCE7DF] border-[#2C6E49] text-[#214E38]' : ''}">
+                <i data-lucide="sun" class="w-4 h-4"></i> Light mode
+              </button>
+              <button onclick="state.theme='dark'; saveState(); render();" class="py-3 px-4 rounded-xl border text-xs font-semibold flex items-center justify-center gap-2 ${state.theme === 'dark' ? 'bg-[#253932] border-[#88B899] text-[#A3D9B5]' : ''}">
+                <i data-lucide="moon" class="w-4 h-4"></i> Dark mode
+              </button>
+            </div>
+          </div>
+
+          <div class="bg-card border-2 ${state.ownerMode ? 'border-[#2C6E49]' : 'border-transparent'} rounded-3xl p-6 space-y-5 shadow-sm">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-[#DCE7DF] dark:bg-[#253932] text-[#214E38] dark:text-[#A3D9B5] flex items-center justify-center">
+                  <i data-lucide="shield-check" class="w-5 h-5"></i>
+                </div>
+                <div>
+                  <h3 class="font-bold text-base">Owner mode</h3>
+                  <p class="text-xs text-gray-500">Protected by Owner ID & Password. Controls all manual & automatic content.</p>
+                </div>
+              </div>
+              <span class="text-xs px-3 py-1 rounded-full font-semibold ${state.ownerMode ? 'bg-green-100 text-green-800' : 'bg-gray-100 dark:bg-gray-800 text-gray-500'}">
+                ${state.ownerMode ? '● Owner Unlocked' : '🔒 Locked'}
+              </span>
+            </div>
+
+            ${!state.ownerMode ? `
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+                <div>
+                  <label class="block text-[11px] font-mono uppercase text-gray-500 mb-1">OWNER ID</label>
+                  <input id="owner-id-input" type="text" placeholder="Enter Owner ID" class="w-full px-4 py-2.5 rounded-xl border bg-[#F9FAF7] dark:bg-[#121B18] text-sm" />
+                </div>
+                <div>
+                  <label class="block text-[11px] font-mono uppercase text-gray-500 mb-1">ADMIN PASSWORD</label>
+                  <input id="owner-pass-input" type="password" placeholder="Enter Password" class="w-full px-4 py-2.5 rounded-xl border bg-[#F9FAF7] dark:bg-[#121B18] text-sm" />
+                </div>
+              </div>
+              <button onclick="authenticateOwner()" class="px-5 py-2.5 rounded-xl bg-[#245940] hover:bg-[#1B4531] text-white text-xs font-semibold transition">
+                Unlock Owner Mode
+              </button>
+            ` : `
+              <div class="p-4 rounded-2xl bg-[#F4F6F2] dark:bg-[#121B18] border space-y-4">
+                <div class="text-xs font-mono uppercase text-[#2C6E49] dark:text-[#88B899] font-bold">
+                  ⚡ Owner Quick Actions (Broadcasts Push Notifications Automatically)
+                </div>
+
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+                  <button onclick="openAddFileModal()" class="p-3 rounded-xl bg-card border text-xs font-semibold flex flex-col items-center gap-1.5 hover:border-[#2C6E49] transition">
+                    <i data-lucide="file-plus" class="w-4 h-4 text-[#2C6E49]"></i>
+                    <span>+ Add Library File</span>
+                  </button>
+                  <button onclick="openAddEventModal()" class="p-3 rounded-xl bg-card border text-xs font-semibold flex flex-col items-center gap-1.5 hover:border-[#2C6E49] transition">
+                    <i data-lucide="calendar-plus" class="w-4 h-4 text-[#2C6E49]"></i>
+                    <span>+ Add Schedule Event</span>
+                  </button>
+                  <button onclick="openOwnerAnnouncementModal()" class="p-3 rounded-xl bg-card border text-xs font-semibold flex flex-col items-center gap-1.5 hover:border-[#2C6E49] transition">
+                    <i data-lucide="megaphone" class="w-4 h-4 text-[#2C6E49]"></i>
+                    <span>+ Broadcast Alert</span>
+                  </button>
+                  <button onclick="openAddExamModal()" class="p-3 rounded-xl bg-card border text-xs font-semibold flex flex-col items-center gap-1.5 hover:border-[#2C6E49] transition">
+                    <i data-lucide="flame" class="w-4 h-4 text-amber-500"></i>
+                    <span>+ Add Colloquium</span>
+                  </button>
+                </div>
+
+                <div class="pt-2 border-t border-gray-200 dark:border-gray-800 space-y-2">
+                  <label class="block text-[11px] font-mono uppercase text-gray-500">TELEGRAM BOT TOKEN (24/7 AUTO-SYNC)</label>
+                  <div class="flex gap-2">
+                    <input id="owner-tg-token" type="password" value="${state.telegramBotToken || ''}" placeholder="123456:ABC-DEF..." class="flex-1 px-3.5 py-2 rounded-xl border bg-card text-xs" />
+                    <button onclick="saveOwnerTelegramToken()" class="px-4 py-2 rounded-xl bg-[#245940] text-white text-xs font-semibold">Save Bot</button>
+                  </div>
+                </div>
+
+                <div class="flex justify-between items-center pt-2">
+                  <span class="text-[11px] text-gray-500">Signed in as Owner ID: <b>${state.ownerCredentials.id}</b></span>
+                  <button onclick="lockOwnerMode()" class="px-4 py-2 rounded-xl border border-red-300 text-red-600 text-xs font-semibold hover:bg-red-50">
+                    Lock Owner Mode
+                  </button>
+                </div>
+              </div>
+            `}
+          </div>
+
+          <div class="bg-card border rounded-3xl p-6 space-y-2">
+            <div class="font-bold text-sm">By AE7</div>
+            <div class="text-xs text-gray-500 font-medium">By Abd-Alrahman Ezzat</div>
+            <div class="pt-2 text-xs font-mono text-gray-600 dark:text-gray-300 space-y-1">
+              <div class="font-semibold text-gray-400">CONTACTS FOR SUPPORT:</div>
+              <div>Number: <a href="tel:01034378990" class="text-[#2C6E49] dark:text-[#88B899] hover:underline">01034378990</a></div>
+              <div>Email: <a href="mailto:abdalrahman9ezzat77@gmail.com" class="text-[#2C6E49] dark:text-[#88B899] hover:underline">abdalrahman9ezzat77@gmail.com</a></div>
+            </div>
+          </div>
+        </main>
+      `;
+    }
+
+    function authenticateOwner() {
+      const idVal = document.getElementById('owner-id-input').value.trim();
+      const passVal = document.getElementById('owner-pass-input').value.trim();
+      if (
+        idVal.toLowerCase() === state.ownerCredentials.id.toLowerCase() &&
+        passVal === state.ownerCredentials.pass
+      ) {
+        state.ownerMode = true;
+        saveState();
+        showToast('Full manual & auto controls are now active.', '🔓 Owner Mode Unlocked');
+        render();
+      } else {
+        showToast('Invalid Owner ID or Password', 'Access Denied');
+      }
+    }
+
+    function lockOwnerMode() {
+      state.ownerMode = false;
+      saveState();
+      showToast('Owner Mode Locked', 'Security');
+      render();
+    }
+
+    function saveOwnerTelegramToken() {
+      state.telegramBotToken = document.getElementById('owner-tg-token').value.trim();
+      saveState();
+      showToast('Telegram Auto-Sync Bot saved!');
+      if (state.telegramBotToken) syncFromTelegramBot(false);
+    }
+
+    function saveProfileSettings() {
+      state.profile.name = document.getElementById('set-name').value.trim() || 'abdo';
+      state.profile.subgroup = document.getElementById('set-group').value;
+      saveState();
+      showToast('Profile saved!');
+      render();
+    }
+
+    function resetSessionSetup() {
+      state.onboardingStep = 'setup1';
+      saveState();
+      render();
+    }
+
+    // ==========================================
+    // MODALS
+    // ==========================================
+    function closeModal() {
+      document.getElementById('modal-root').innerHTML = '';
+    }
+
+    function openOwnerAnnouncementModal() {
+      document.getElementById('modal-root').innerHTML = `
+        <div class="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
+          <div class="bg-card border rounded-3xl max-w-md w-full p-6 space-y-4 shadow-xl">
+            <h3 class="font-bold text-lg">Broadcast Alert & Notification (Owner)</h3>
+            <input id="own-ann-title" type="text" placeholder="Title (e.g. Hall Change for Group B)" class="w-full px-4 py-2.5 rounded-xl border bg-[#F9FAF7] dark:bg-[#121B18] text-sm" />
+            <textarea id="own-ann-body" rows="3" placeholder="Announcement details..." class="w-full px-4 py-2.5 rounded-xl border bg-[#F9FAF7] dark:bg-[#121B18] text-sm"></textarea>
+            <div class="flex justify-end gap-2">
+              <button onclick="closeModal()" class="px-4 py-2 rounded-xl border text-xs">Cancel</button>
+              <button onclick="confirmOwnerAnnouncement()" class="px-5 py-2 rounded-xl bg-[#245940] text-white text-xs font-semibold">Publish & Push Alert</button>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function confirmOwnerAnnouncement() {
+      const title = document.getElementById('own-ann-title').value.trim();
+      const body = document.getElementById('own-ann-body').value.trim();
+      if (!title) return;
+      state.uniContent.Announcements.unshift({ id: 'u_' + Date.now(), title, desc: body });
+      state.notifications.unshift({ id: 'n_' + Date.now(), title: '📢 ' + title, body, time: 'Just now', unread: true });
+      saveState();
+      closeModal();
+      dispatchNativeNotification('📢 ' + title, body || 'New announcement posted in Med7 SPBU.');
+      render();
+    }
+
+    function openNotificationsModal() {
+      (state.notifications || []).forEach(n => n.unread = false);
+      saveState();
+      const permStatus = getNotificationStatus();
+
+      document.getElementById('modal-root').innerHTML = `
+        <div class="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
+          <div class="bg-card border rounded-3xl max-w-md w-full p-6 space-y-4 shadow-xl max-h-[85vh] overflow-y-auto custom-scroll">
+            <div class="flex items-center justify-between">
+              <h3 class="font-bold text-lg">Notifications & Push Alerts</h3>
+              <button onclick="closeModal(); render();" class="text-gray-400">✕</button>
+            </div>
+
+            <div class="p-3.5 rounded-2xl bg-[#DCE7DF]/60 dark:bg-[#253932] flex items-center justify-between gap-2">
+              <div class="text-xs">
+                <div class="font-bold text-[#214E38] dark:text-[#A3D9B5]">
+                  ${permStatus === 'granted' ? '✅ Device Push Alerts Active' : '🔔 Enable System Notifications'}
+                </div>
+                <div class="text-[11px] text-gray-600 dark:text-gray-300">
+                  Receive alerts for Pomodoro, Schedules & new PDFs.
+                </div>
+              </div>
+              <button onclick="requestDeviceNotificationPermission()" class="px-3 py-1.5 rounded-xl bg-[#245940] text-white text-xs font-semibold shrink-0">
+                ${permStatus === 'granted' ? 'Test' : 'Enable'}
+              </button>
+            </div>
+
+            <div class="space-y-2.5 text-xs">
+              ${(state.notifications || []).map(n => `
+                <div class="p-3.5 rounded-2xl bg-[#F3F5F0] dark:bg-[#121B18] border">
+                  <div class="flex items-center justify-between mb-1">
+                    <span class="font-bold text-sm">${n.title}</span>
+                    <span class="text-[10px] font-mono text-gray-400">${n.time || 'Recent'}</span>
+                  </div>
+                  <div class="text-gray-600 dark:text-gray-300">${n.body}</div>
+                </div>
+              `).join('')}
+            </div>
+            <div class="flex justify-end">
+              <button onclick="closeModal(); render();" class="px-5 py-2 rounded-xl bg-[#245940] text-white text-xs font-semibold">Done</button>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function openAddTaskModal(defaultDue = 'TODAY', defaultSubject = 'Clinical Anatomy') {
+      document.getElementById('modal-root').innerHTML = `
+        <div class="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
+          <div class="bg-card border rounded-3xl max-w-md w-full p-6 space-y-4 shadow-xl">
+            <div class="flex items-center justify-between">
+              <h3 class="font-bold text-lg">Add Personal Task</h3>
+              <button onclick="closeModal()" class="text-gray-400">✕</button>
+            </div>
+            <input id="modal-task-title" type="text" placeholder="Task title..." class="w-full px-4 py-2.5 rounded-xl border bg-[#F9FAF7] dark:bg-[#121B18] text-sm" />
+            <select id="modal-task-subject" class="w-full px-4 py-2.5 rounded-xl border bg-[#F9FAF7] dark:bg-[#121B18] text-sm">
+              ${state.subjects.map(s => `<option value="${s.title}" ${s.title === defaultSubject ? 'selected' : ''}>${s.code} - ${s.title}</option>`).join('')}
+            </select>
+            <div class="flex justify-end gap-2">
+              <button onclick="closeModal()" class="px-4 py-2 rounded-xl border text-xs">Cancel</button>
+              <button onclick="confirmAddTask()" class="px-5 py-2 rounded-xl bg-[#245940] text-white text-xs font-semibold">Save Task</button>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function confirmAddTask() {
+      const title = document.getElementById('modal-task-title').value.trim();
+      const subject = document.getElementById('modal-task-subject').value;
+      if (!title) return;
+      state.tasks.unshift({ id: 't_' + Date.now(), title, subject, dueGroup: 'TODAY', dueLabel: 'Today', completed: false });
+      saveState();
+      closeModal();
+      render();
+    }
+
+    function openAddFileModal(defaultSub = 'Clinical Anatomy') {
+      if (!state.ownerMode) return;
+      document.getElementById('modal-root').innerHTML = `
+        <div class="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
+          <div class="bg-card border rounded-3xl max-w-md w-full p-6 space-y-4 shadow-xl">
+            <h3 class="font-bold text-lg">Upload Study File (Owner)</h3>
+            <input id="file-title" type="text" placeholder="File Title (e.g. Lecture 4.pdf)" class="w-full px-4 py-2.5 rounded-xl border bg-[#F9FAF7] dark:bg-[#121B18] text-sm" />
+            <select id="file-subject" class="w-full px-4 py-2.5 rounded-xl border bg-[#F9FAF7] dark:bg-[#121B18] text-sm">
+              ${state.subjects.map(s => `<option value="${s.title}" ${s.title === defaultSub ? 'selected' : ''}>${s.code} - ${s.title}</option>`).join('')}
+            </select>
+            <input id="file-url" type="text" placeholder="Direct File URL (Optional)" class="w-full px-4 py-2.5 rounded-xl border bg-[#F9FAF7] dark:bg-[#121B18] text-sm" />
+            <textarea id="file-summary" rows="2" placeholder="Brief summary or notes..." class="w-full px-4 py-2.5 rounded-xl border bg-[#F9FAF7] dark:bg-[#121B18] text-sm"></textarea>
+            <div class="flex justify-end gap-2">
+              <button onclick="closeModal()" class="px-4 py-2 rounded-xl border text-xs">Cancel</button>
+              <button onclick="confirmAddFile()" class="px-5 py-2 rounded-xl bg-[#245940] text-white text-xs font-semibold">Upload & Notify</button>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function confirmAddFile() {
+      const title = document.getElementById('file-title').value.trim();
+      const subject = document.getElementById('file-subject').value;
+      const url = document.getElementById('file-url').value.trim() || '#';
+      const summary = document.getElementById('file-summary').value.trim() || 'Uploaded by Owner.';
+      if (!title) return;
+      state.library.unshift({
+        id: 'f_' + Date.now(),
+        subject,
+        title,
+        type: 'PDF',
+        size: '2.4 MB',
+        badge: subject.charAt(0).toUpperCase(),
+        starred: true,
+        summary,
+        url
+      });
+      state.notifications.unshift({
+        id: 'n_' + Date.now(),
+        title: `📚 New File in ${subject}`,
+        body: `${title} was uploaded to the Library.`,
+        time: 'Just now',
+        unread: true
+      });
+      saveState();
+      closeModal();
+      dispatchNativeNotification(`📚 New File in ${subject}`, `${title} is now available in your Library!`);
+      render();
+    }
+
+    function openAddExamModal() {
+      if (!state.ownerMode) return;
+      document.getElementById('modal-root').innerHTML = `
+        <div class="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
+          <div class="bg-card border rounded-3xl max-w-md w-full p-6 space-y-4 shadow-xl">
+            <h3 class="font-bold text-lg">Add Colloquium / Zachet (Owner)</h3>
+            <input id="ex-title" type="text" placeholder="Exam title..." class="w-full px-4 py-2.5 rounded-xl border bg-[#F9FAF7] dark:bg-[#121B18] text-sm" />
+            <input id="ex-date" type="date" value="2026-11-15" class="w-full px-4 py-2.5 rounded-xl border bg-[#F9FAF7] dark:bg-[#121B18] text-sm" />
+            <input id="ex-room" type="text" placeholder="Room / Hall" class="w-full px-4 py-2.5 rounded-xl border bg-[#F9FAF7] dark:bg-[#121B18] text-sm" />
+            <div class="flex justify-end gap-2">
+              <button onclick="closeModal()" class="px-4 py-2 rounded-xl border text-xs">Cancel</button>
+              <button onclick="confirmAddExam()" class="px-5 py-2 rounded-xl bg-[#245940] text-white text-xs font-semibold">Add</button>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function confirmAddExam() {
+      const title = document.getElementById('ex-title').value.trim();
+      const date = document.getElementById('ex-date').value || '2026-11-15';
+      const room = document.getElementById('ex-room').value.trim() || 'Hall 3';
+      if (!title) return;
+      state.exams.push({ id: 'ex_' + Date.now(), title, date, type: 'Colloquium', room });
+      saveState();
+      closeModal();
+      dispatchNativeNotification('🔥 New Colloquium Scheduled', `${title} (${date}) in ${room}`);
+      render();
+    }
+
+    function openSubjectModal(subId) {
+      const sub = state.subjects.find(s => s.id === subId);
+      if (!sub) return;
+      const subFiles = state.library.filter(f => f.subject === sub.title);
+      document.getElementById('modal-root').innerHTML = `
+        <div class="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
+          <div class="bg-card border rounded-3xl max-w-lg w-full p-6 space-y-4 shadow-xl">
+            <div class="flex items-center justify-between">
+              <h3 class="font-bold text-base">${sub.code} — ${sub.title}</h3>
+              <button onclick="closeModal()" class="text-gray-400">✕</button>
+            </div>
+            <div class="space-y-2">
+              ${subFiles.length === 0 ? `<p class="text-xs text-gray-400">No files uploaded yet.</p>` : subFiles.map(f => `
+                <div class="p-3 rounded-xl border text-xs flex items-center justify-between">
+                  <span>${f.title}</span>
+                  <button onclick="openInAppPdfViewer('${f.id}')" class="px-3 py-1 rounded-lg bg-[#245940] text-white">Preview</button>
+                </div>
+              `).join('')}
+            </div>
+            ${state.ownerMode ? `
+              <div class="pt-2 flex justify-end">
+                <button onclick="closeModal(); openAddFileModal('${sub.title}');" class="px-4 py-2 rounded-xl bg-[#245940] text-white text-xs font-semibold">+ Upload File to Subject</button>
+              </div>
+            ` : ''}
+          </div>
+        </div>
+      `;
+    }
+
+    function openAddEventModal() {
+      if (!state.ownerMode) return;
+      document.getElementById('modal-root').innerHTML = `
+        <div class="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
+          <div class="bg-card border rounded-3xl max-w-md w-full p-6 space-y-4 shadow-xl">
+            <h3 class="font-bold text-lg">Add Schedule Event (Owner)</h3>
+            <input id="ev-title" type="text" placeholder="Event title..." class="w-full px-4 py-2.5 rounded-xl border bg-[#F9FAF7] dark:bg-[#121B18] text-sm" />
+            <div class="grid grid-cols-2 gap-2">
+              <input id="ev-time" type="text" value="13:30 - 14:30" class="w-full px-4 py-2.5 rounded-xl border bg-[#F9FAF7] dark:bg-[#121B18] text-sm" />
+              <select id="ev-group" class="w-full px-4 py-2.5 rounded-xl border bg-[#F9FAF7] dark:bg-[#121B18] text-sm">
+                <option value="All groups">All groups</option>
+                <option value="Group A">Group A</option>
+                <option value="Group B">Group B</option>
+              </select>
+            </div>
+            <input id="ev-sub" type="text" placeholder="Hall / Lab (or write 'Online' for lms.spbu.ru)" class="w-full px-4 py-2.5 rounded-xl border bg-[#F9FAF7] dark:bg-[#121B18] text-sm" />
+            <div class="flex justify-end gap-2">
+              <button onclick="closeModal()" class="px-4 py-2 rounded-xl border text-xs">Cancel</button>
+              <button onclick="confirmAddEvent()" class="px-5 py-2 rounded-xl bg-[#245940] text-white text-xs font-semibold">Add & Notify</button>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function confirmAddEvent() {
+      const title = document.getElementById('ev-title').value.trim();
+      const time = document.getElementById('ev-time').value.trim();
+      const group = document.getElementById('ev-group').value;
+      const subtitle = document.getElementById('ev-sub').value.trim() || 'Hall 3';
+      const isOnline = subtitle.toLowerCase().includes('online') || subtitle.toLowerCase().includes('lms.spbu');
+      if (!title) return;
+      state.calendar.push({
+        id: 'c_' + Date.now(),
+        day: state.selectedDay,
+        dayName: 'DAY',
+        time,
+        title,
+        subtitle: isOnline ? `${subtitle} (lms.spbu.ru)` : subtitle,
+        group,
+        isOnline,
+        onlineUrl: SPBU_LMS_URL,
+        locationGuide: subtitle
+      });
+      state.notifications.unshift({
+        id: 'n_' + Date.now(),
+        title: `📅 Schedule Update (${group})`,
+        body: `${title} at ${time} (${subtitle})`,
+        time: 'Just now',
+        unread: true
+      });
+      saveState();
+      closeModal();
+      dispatchNativeNotification(`📅 Schedule Update (${group})`, `${title} scheduled at ${time} — ${subtitle}`, group);
+      render();
+    }
+
+    function openAddUniContentModal() {
+      if (!state.ownerMode) return;
+      document.getElementById('modal-root').innerHTML = `
+        <div class="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
+          <div class="bg-card border rounded-3xl max-w-md w-full p-6 space-y-4 shadow-xl">
+            <h3 class="font-bold text-lg">Add to ${state.uniSubTab} (Owner)</h3>
+            <input id="uni-title" type="text" placeholder="Title..." class="w-full px-4 py-2.5 rounded-xl border bg-[#F9FAF7] dark:bg-[#121B18] text-sm" />
+            <textarea id="uni-desc" rows="3" placeholder="Details..." class="w-full px-4 py-2.5 rounded-xl border bg-[#F9FAF7] dark:bg-[#121B18] text-sm"></textarea>
+            <div class="flex justify-end gap-2">
+              <button onclick="closeModal()" class="px-4 py-2 rounded-xl border text-xs">Cancel</button>
+              <button onclick="confirmAddUniContent()" class="px-5 py-2 rounded-xl bg-[#245940] text-white text-xs font-semibold">Publish & Notify</button>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function confirmAddUniContent() {
+      const title = document.getElementById('uni-title').value.trim();
+      const desc = document.getElementById('uni-desc').value.trim();
+      if (!title) return;
+      state.uniContent[state.uniSubTab].unshift({ id: 'u_' + Date.now(), title, desc });
+      state.notifications.unshift({
+        id: 'n_' + Date.now(),
+        title: `🔔 New in ${state.uniSubTab}: ${title}`,
+        body: desc || 'Tap University tab to view details.',
+        time: 'Just now',
+        unread: true
+      });
+      saveState();
+      closeModal();
+      dispatchNativeNotification(`🔔 New in ${state.uniSubTab}`, `${title}: ${desc}`);
+      render();
+    }
+
+    // ==========================================
+    // MAIN RENDER
+    // ==========================================
+    function render() {
+      applyTheme();
+      const root = document.getElementById('app');
+
+      if (state.onboardingStep === 'setup1') {
+        root.innerHTML = renderSetupStep1();
+        lucide.createIcons();
+        return;
+      }
+      if (state.onboardingStep === 'setup2') {
+        root.innerHTML = renderSetupStep2();
+        lucide.createIcons();
+        return;
+      }
+
+      let pageContent = '';
+      if (state.activeTab === 'home') pageContent = renderHome();
+      else if (state.activeTab === 'university') pageContent = renderUniversity();
+      else if (state.activeTab === 'tasks') pageContent = renderTasks();
+      else if (state.activeTab === 'calendar') pageContent = renderCalendar();
+      else if (state.activeTab === 'library') pageContent = renderLibrary();
+      else if (state.activeTab === 'settings') pageContent = renderSettings();
+
+      root.innerHTML = `
+        ${renderHeader()}
+        ${pageContent}
+        ${renderBottomNav()}
+      `;
+      lucide.createIcons();
+    }
+
+    initPwaAndServiceWorker();
+    render();
+  </script>
+</body>
+</html>
